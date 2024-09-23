@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\databasepmapilearn6.props" />
+</Project>

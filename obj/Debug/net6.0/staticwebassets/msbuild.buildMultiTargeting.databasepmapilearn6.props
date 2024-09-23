@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\databasepmapilearn6.props" />
+</Project>
