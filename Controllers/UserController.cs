@@ -85,6 +85,8 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MUser>> PostUser([FromBody] IMUser.Create mUser)
         {
+            //  nnti diberi validasi cek role user sebelum create akun user
+
           if (_context.MUser == null)
           {
               return Problem("Entity set 'DatabasePmContext.MUser' is null.");
@@ -97,7 +99,7 @@ namespace databasepmapilearn6.Controllers
             Name = mUser.Name,
             Email = mUser.Email,
             Password = mUser.Password,
-            CreatedBy = 2, // sementara hardcode dulu 
+            CreatedBy = 2, // sementara hardcode dulu  
             CreatedDate = DateTime.Now,
             IsDeleted = false // sementara hardcode dulu
           };
@@ -107,7 +109,7 @@ namespace databasepmapilearn6.Controllers
             await _context.SaveChangesAsync();
 
              // when success only return success code without sending message
-            return Ok();
+            return Created("/api/user", mUser);
           }
           catch {  
             return BadRequest("Error on the API"); // change the error response later
