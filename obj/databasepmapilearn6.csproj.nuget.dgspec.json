@@ -71,6 +71,10 @@
               "target": "Package",
               "version": "[6.0.1, )"
             },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
             "Microsoft.Extensions.Options": {
               "target": "Package",
               "version": "[6.0.0, )"
@@ -82,6 +86,10 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[6.0.17, )"
+            },
+            "MySqlConnector": {
+              "target": "Package",
+              "version": "[2.3.7, )"
             },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",

@@ -11,8 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabasePmContext>(options => 
 {
-    string? connectionString = builder.Configuration.GetConnectionString("Databaseapilearn6");
-    options.UseMySql(connectionString, MySqlServerVersion.AutoDetect(connectionString));
+    string connectionString = builder.Configuration.GetConnectionString("Databaseapilearn6");
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
 var app = builder.Build();

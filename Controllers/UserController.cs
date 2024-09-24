@@ -83,16 +83,35 @@ namespace databasepmapilearn6.Controllers
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MUser>> PostMUser(MUser mUser)
+        public async Task<ActionResult<MUser>> PostUser([FromBody] MUser mUser)
         {
           if (_context.MUser == null)
           {
-              return Problem("Entity set 'DatabasePmContext.MUser'  is null.");
+              return Problem("Entity set 'DatabasePmContext.MUser' is null.");
           }
-            _context.MUser.Add(mUser);
+
+          var User = new MUser {
+            RoleId = mUser.RoleId,
+            PositionId = mUser.PositionId,
+            Username = mUser.Username,
+            Name = mUser.Name,
+            Email = mUser.Email,
+            Password = mUser.Password,
+            CreatedBy = 2, // sementara hardcode dulu 
+            CreatedDate = DateTime.Now,
+            IsDeleted = false // sementara hardcode dulu
+          };
+
+          try {
+            await _context.MUser.AddAsync(User);
             await _context.SaveChangesAsync();
 
+             // when success return user info as response
             return CreatedAtAction("GetMUser", new { id = mUser.Id }, mUser);
+          }
+          catch {  
+            return BadRequest("Error on the API"); // change the error response later
+          }
         }
 
         // DELETE: api/User/5
