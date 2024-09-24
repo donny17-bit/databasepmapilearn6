@@ -83,7 +83,7 @@ namespace databasepmapilearn6.Controllers
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MUser>> PostUser([FromBody] MUser mUser)
+        public async Task<ActionResult<MUser>> PostUser([FromBody] IMUser.Create mUser)
         {
           if (_context.MUser == null)
           {
@@ -106,8 +106,8 @@ namespace databasepmapilearn6.Controllers
             await _context.MUser.AddAsync(User);
             await _context.SaveChangesAsync();
 
-             // when success return user info as response
-            return CreatedAtAction("GetMUser", new { id = mUser.Id }, mUser);
+             // when success only return success code without sending message
+            return Ok();
           }
           catch {  
             return BadRequest("Error on the API"); // change the error response later
