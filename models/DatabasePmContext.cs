@@ -29,4 +29,5 @@ public class DatabasePmContext : DbContext {
     public DbSet<databasepmapilearn6.models.TrxApproval>? TrxApproval { get; set; }
     public DbSet<databasepmapilearn6.models.TrxFdf>? TrxFdf { get; set; }
     public DbSet<databasepmapilearn6.models.TrxFrf>? TrxFrf { get; set; }
+    public DbSet<databasepmapilearn6.models.TrxFrfFile>? TrxFrfFile { get; set; }
 }
