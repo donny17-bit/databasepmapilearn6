@@ -42,4 +42,6 @@ public class MUser
 
     [Column("is_deleted")]
     public bool IsDeleted {get; set;}
+
+
 }

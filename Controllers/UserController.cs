@@ -99,6 +99,7 @@ namespace databasepmapilearn6.Controllers
             Name = mUser.Name,
             Email = mUser.Email,
             Password = mUser.Password,
+            RetryCount = 0, // sementara hardcode dulu
             CreatedBy = 2, // sementara hardcode dulu  
             CreatedDate = DateTime.Now,
             IsDeleted = false // sementara hardcode dulu

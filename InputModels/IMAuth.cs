@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace databasepmapilearn6.models;
+namespace databasepmapilearn6.InputModels;
 
 
 public class IMAuth
