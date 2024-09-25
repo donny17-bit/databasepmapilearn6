@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace databasepmapilearn6.Controllers
 {
+    [Route("/api/[controller]")]
+    [ApiController]
     public class AuthController : ControllerBase 
     {
         private readonly DatabasePmContext _context;
