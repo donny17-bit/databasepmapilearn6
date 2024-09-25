@@ -3,6 +3,7 @@ using databasepmapilearn6.InputModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.Utilities;
+using databasepmapilearn6.Constans;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -78,13 +79,12 @@ namespace databasepmapilearn6.Controllers
             // password benar //
             
             // create refresh token
-            string token = UtlGenerator.GenerateRandom(16, "asdad3312 sda");
-
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(token));
+            string token = UtlGenerator.GenerateRandom(CDefault.TokenLength, CDefault.RandomCharRange);
             
             // update data user
             user.RetryCount = 0;
             user.LockedUntil = null;
+            user.RefreshToken = token;
 
             try
             {
@@ -96,7 +96,14 @@ namespace databasepmapilearn6.Controllers
                 return BadRequest($"Error on the Login right password API : {e}");
             }
             
-            return Ok("Sukses Login");
+            // create response object
+            var response = new {
+                user.Email,
+                user.Username,
+                user.RefreshToken
+            };
+
+            return Ok(response);
         }
     }
 }
