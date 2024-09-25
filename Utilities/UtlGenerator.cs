@@ -1,3 +1,4 @@
+using databasepmapilearn6.Configurations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,7 +17,7 @@ public static class UtlGenerator
         return token;
     }
 
-    public static string Jwt(string confJwt, string claim, int expMinutes)
+    public static string Jwt(ConfJwt confJwt, string claim, int expMinutes)
     {
         return "";
     }
