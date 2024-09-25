@@ -18,7 +18,12 @@ public class IMClaim
     public static IMClaim FromUserClaim(IEnumerable<Claim> userClaims) 
     {
         return new IMClaim {
-            Id = userClaims.GetUserId()
+            Id = userClaims.GetUserId(),
+            Username = userClaims.GetUsername(),
+            Name = userClaims.GetName(),
+            Email = userClaims.GetEmail(),
+            RoleId = userClaims.GetRoleId(),
+            PositionId = userClaims.GetPositionId()
         };
     }
 }
