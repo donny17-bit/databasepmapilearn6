@@ -79,12 +79,15 @@ namespace databasepmapilearn6.Controllers
             // password benar //
             
             // create refresh token
-            string token = UtlGenerator.GenerateRandom(CDefault.TokenLength, CDefault.RandomCharRange);
+            string RefreshToken = UtlGenerator.GenerateRandom(CDefault.TokenLength, CDefault.RandomCharRange);
+
+            // create jwt token (blm dibuat classnya)
+            
             
             // update data user
             user.RetryCount = 0;
             user.LockedUntil = null;
-            user.RefreshToken = token;
+            user.RefreshToken = RefreshToken;
 
             try
             {

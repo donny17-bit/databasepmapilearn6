@@ -15,4 +15,9 @@ public static class UtlGenerator
             // new method is used to join all the array to become an string
         return token;
     }
+
+    public static string Jwt(string confJwt, string claim, int expMinutes)
+    {
+        return "";
+    }
 }
