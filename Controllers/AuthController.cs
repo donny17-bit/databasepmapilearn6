@@ -2,6 +2,7 @@ using databasepmapilearn6.models;
 using databasepmapilearn6.InputModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using databasepmapilearn6.Utilities;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -14,6 +15,9 @@ namespace databasepmapilearn6.Controllers
         {
             _context = context;
         }
+
+        // tanya kenapa harus di private dan ditaruh sini 
+        // private const int CL_MAX_RETRY_COUNT = 2;
 
         // POST : api/auth
         [HttpPost]
@@ -73,7 +77,10 @@ namespace databasepmapilearn6.Controllers
 
             // password benar //
             
-            // create refresh token (class blm dibuat)
+            // create refresh token
+            string token = UtlGenerator.GenerateRandom(16, "asdad3312 sda");
+
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(token));
             
             // update data user
             user.RetryCount = 0;
