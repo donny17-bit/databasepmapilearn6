@@ -1,8 +1,8 @@
 using System.Security.Claims;
 
-namespace databasepmapilearn6.Extension;
+namespace databasepmapilearn6.ExtensionMethods;
 
-public static class IEnumerableClaimExt
+public static class ExtClaim
 {
     // convert to claim to int
     private static int ClaimToInt(this IEnumerable<Claim> userClaim, string type) 

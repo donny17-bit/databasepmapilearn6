@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using databasepmapilearn6.ExtensionMethods;
 
 namespace databasepmapilearn6.InputModels;
 
@@ -17,7 +18,7 @@ public class IMClaim
     public static IMClaim FromUserClaim(IEnumerable<Claim> userClaims) 
     {
         return new IMClaim {
-            // Id = userClaims.GetUserId();
+            Id = userClaims.GetUserId()
         };
     }
 }
