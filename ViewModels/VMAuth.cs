@@ -1,6 +1,6 @@
 namespace databasepmapilearn6.ViewModels;
 
-public class ViewModels
+public class VMAuth
 {
     public class Login {
         public bool IsWrongPassword {get; set;}

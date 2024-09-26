@@ -94,6 +94,8 @@ namespace databasepmapilearn6.Controllers
             // create jwt token
             var Jwt = UtlGenerator.Jwt(_confJwt, claim, 60);
 
+            // save refersh token and access token to model auth
+            // var vm = VMA
 
             // update data user
             user.RetryCount = 0;
