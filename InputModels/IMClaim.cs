@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using databasepmapilearn6.Constans;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.models;
 
@@ -46,6 +47,12 @@ public class IMClaim
         return new Claim[] {
             new(JwtRegisteredClaimNames.UniqueName, Username),
             new(ClaimTypes.Role, RoleId.ToString()),
+            new(CClaim.Id, Id.ToString()),
+            new(CClaim.Username, Username),
+            new(CClaim.Name, Name),
+            new(CClaim.PositionId, PositionId.ToString()),
+            new(CClaim.RoleId, RoleId.ToString()),
+            new(CClaim.Email, Email ?? ""),
         };
     }
 }
