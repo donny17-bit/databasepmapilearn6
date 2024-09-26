@@ -93,8 +93,9 @@ namespace databasepmapilearn6.Controllers
               return Problem("Entity set 'DatabasePmContext.MUser' is null.");
           }
 
-        //   Create encode password
-        var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(mUser.Password);
+       
+        // generate random password
+        var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
 
           var User = new MUser {
             RoleId = mUser.RoleId,
@@ -109,12 +110,17 @@ namespace databasepmapilearn6.Controllers
             IsDeleted = false // sementara hardcode dulu
           };
 
+          var res = new {
+            mUser,
+            password = rawPassword
+          };
+
           try {
             await _context.MUser.AddAsync(User);
             await _context.SaveChangesAsync();
 
              // when success return success code and send user information
-            return Created("/api/user", mUser);
+            return Created("/api/user", res);
           }
           catch {  
             return BadRequest("Error on the API"); // change the error response later

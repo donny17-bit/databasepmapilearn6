@@ -24,11 +24,6 @@ public class IMUser
         [Required]
         public string Email {get; set;} = null!;
 
-
-        // buat sementara user input password saat create akun 
-        // nnti dihapus kalau menthod auto create random password sudah ada
-        [Required]
-        public string Password {get; set;} = null!;
     }
 
     public class Input

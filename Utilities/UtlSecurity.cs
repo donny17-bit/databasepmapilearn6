@@ -1,18 +1,38 @@
 using System.Security.Cryptography;
+using databasepmapilearn6.Constans;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace databasepmapilearn6.Utilities;
 
-public class UtlSecurity
+public class UtlSecurity 
 {
-    public static (string rawPassword, string hashedPassword) GeneratePassword(string password)
+    public static string HashedPassword(string password)
     {
+        // encryption password
         var salt = Salt(16);
         var hash = Hash(password, salt);
         var stringSalt = Convert.ToBase64String(salt);
         var hashedPassword = $"{stringSalt}:{hash}";
 
-        return (password, hashedPassword); 
+        return hashedPassword;
+    }
+
+    public static (string rawPassword, string hashedPassword) GeneratePassword(int length)
+    {
+        // generate random password
+        var rnd = new Random();
+        var chars = new char[length];
+        for (int i=0; i<length; i++) 
+        {
+            chars[i] = CDefault.RandomCharRange[rnd.Next(0, length)];
+        }
+
+        var randomPassword = new string(chars);
+
+        // encrypt password
+        string hashedPassword = HashedPassword(randomPassword);
+
+        return (randomPassword, hashedPassword); 
     }
 
     public static bool ValidatePassword(string hashedPassword, string password)
