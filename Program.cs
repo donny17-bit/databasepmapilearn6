@@ -1,12 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// add jwt env
+var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
+var jwtAudiance = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
 
+// Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabasePmContext>(options => 
@@ -14,6 +20,25 @@ builder.Services.AddDbContext<DatabasePmContext>(options =>
     string connectionString = builder.Configuration.GetConnectionString("Databaseapilearn6");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
+
+// add JWT service
+// ntar cari tau cara bacanya
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+    options => 
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudiance,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    }
+);
+// end add JWT service
 
 var app = builder.Build();
 
