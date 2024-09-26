@@ -253,3 +253,5 @@ D:\Code\.net\databasepmapilearn6\obj\Debug\net6.0\databasepmapilearn6.sourcelink
 D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.Extensions.Logging.Abstractions.dll
 d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
+d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll

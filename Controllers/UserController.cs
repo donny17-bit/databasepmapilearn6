@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using databasepmapilearn6.Utilities;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -92,13 +93,16 @@ namespace databasepmapilearn6.Controllers
               return Problem("Entity set 'DatabasePmContext.MUser' is null.");
           }
 
+        //   Create encode password
+        var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(mUser.Password);
+
           var User = new MUser {
             RoleId = mUser.RoleId,
             PositionId = mUser.PositionId,
             Username = mUser.Username,
             Name = mUser.Name,
             Email = mUser.Email,
-            Password = mUser.Password,
+            Password = hashedPassword, // sementara ambil dari user 
             RetryCount = 0, // sementara hardcode dulu
             CreatedBy = 2, // sementara hardcode dulu  
             CreatedDate = DateTime.Now,
@@ -109,7 +113,7 @@ namespace databasepmapilearn6.Controllers
             await _context.MUser.AddAsync(User);
             await _context.SaveChangesAsync();
 
-             // when success only return success code without sending message
+             // when success return success code and send user information
             return Created("/api/user", mUser);
           }
           catch {  

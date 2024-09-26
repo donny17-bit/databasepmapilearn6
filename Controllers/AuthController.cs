@@ -96,7 +96,7 @@ namespace databasepmapilearn6.Controllers
             var claim = IMClaim.FromDb(user);
 
             // create jwt token
-            var Jwt = UtlGenerator.Jwt(_confJwt, claim, 60);
+            string Jwt = UtlGenerator.Jwt(_confJwt, claim, 60);
 
             // save refersh token and access token to model auth
             var res = VMAuth.Login.Success(Jwt, RefreshToken);
