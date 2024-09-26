@@ -11,7 +11,7 @@ using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
-    [Route("/api/[controller]")]
+    [Route("/api/login")]
     [ApiController]
     public class AuthController : ControllerBase 
     {
@@ -37,6 +37,9 @@ namespace databasepmapilearn6.Controllers
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
             if(!ModelState.IsValid) return BadRequest();
+
+            // konversi input ke json string
+            // ini belum
 
             // get data user from DB
             var user = await _context.MUser

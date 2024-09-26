@@ -13,7 +13,7 @@ var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtAudiance = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
 
 // Add services to the container.
-builder.Services.Configure<ConfJwt>(builder.Configuration.GetSection("Jwt")); // configure ConfJwt to the main program
+builder.Services.Configure<ConfJwt>(builder.Configuration.GetSection("Jwt")); // configure ConfJwt to the main program (valuenya belum disimpan di class constan)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
