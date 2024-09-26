@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.models;
@@ -38,6 +39,13 @@ public class IMClaim
             Email = userClaims.Email,
             RoleId = userClaims.RoleId,
             PositionId = userClaims.PositionId
+        };
+    }
+
+    public Claim[] ToClaim() {
+        return new Claim[] {
+            new(JwtRegisteredClaimNames.UniqueName, Username),
+            new(ClaimTypes.Role, RoleId.ToString()),
         };
     }
 }

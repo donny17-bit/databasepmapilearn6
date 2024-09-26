@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using databasepmapilearn6.Configurations;
 using databasepmapilearn6.InputModels;
@@ -22,7 +23,18 @@ public static class UtlGenerator
 
     public static string Jwt(ConfJwt confJwt, IMClaim claim, int expMinutes)
     {
+        // ntar cari tau symmetric security key 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confJwt.Key));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: confJwt.Issuer,
+            audience: confJwt.Audience,
+            // claims: claim,
+            expires: DateTime.Now.AddMinutes(expMinutes),
+            signingCredentials: credentials
+        );
+
 
         return "";
     }
