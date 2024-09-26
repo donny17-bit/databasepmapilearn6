@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.Utilities;
 using databasepmapilearn6.Constans;
+using databasepmapilearn6.Configurations;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -11,13 +14,15 @@ namespace databasepmapilearn6.Controllers
     [ApiController]
     public class AuthController : ControllerBase 
     {
-        private readonly DatabasePmContext _context;
-        public AuthController(DatabasePmContext context)
+        private readonly DatabasePmContext _context;    
+        private readonly ConfJwt _confJwt;
+        public AuthController(DatabasePmContext context, IOptions<ConfJwt> optionsJwt)
         {
             _context = context;
+            _confJwt = optionsJwt.Value;
         }
 
-        // tanya kenapa harus di private dan ditaruh sini 
+        // tanya kenapa harus di private dan ditaruh sini  
         // private const int CL_MAX_RETRY_COUNT = 2;
 
         // POST : api/auth
@@ -58,6 +63,8 @@ namespace databasepmapilearn6.Controllers
 
                 // lock user jika sudah banyak percobaan
                 if (user.RetryCount > 2 ) {
+                // if (user.RetryCount > CL_MAX_RETRY_COUNT) {
+
                     user.LockedUntil = DateTime.Now.AddMinutes(5);
                 } 
 
@@ -81,9 +88,13 @@ namespace databasepmapilearn6.Controllers
             // create refresh token
             string RefreshToken = UtlGenerator.GenerateRandom(CDefault.TokenLength, CDefault.RandomCharRange);
 
+            // create claim
+            var claim = IMClaim.FromDb(user);
+
             // create jwt token (blm dibuat classnya)
+            var Jwt = UtlGenerator.Jwt(_confJwt, claim, 10);
             
-            
+
             // update data user
             user.RetryCount = 0;
             user.LockedUntil = null;

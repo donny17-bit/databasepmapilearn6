@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using databasepmapilearn6.ExtensionMethods;
+using databasepmapilearn6.models;
 
 namespace databasepmapilearn6.InputModels;
 
@@ -24,6 +25,19 @@ public class IMClaim
             Email = userClaims.GetEmail(),
             RoleId = userClaims.GetRoleId(),
             PositionId = userClaims.GetPositionId()
+        };
+    }
+
+    
+    public static IMClaim FromDb(MUser userClaims) 
+    {
+        return new IMClaim {
+            Id = userClaims.Id,
+            Username = userClaims.Username,
+            Name = userClaims.Name,
+            Email = userClaims.Email,
+            RoleId = userClaims.RoleId,
+            PositionId = userClaims.PositionId
         };
     }
 }

@@ -1,6 +1,9 @@
+using System.Text;
 using databasepmapilearn6.Configurations;
+using databasepmapilearn6.InputModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.IdentityModel.Tokens;
 
 namespace databasepmapilearn6.Utilities;
 
@@ -17,8 +20,10 @@ public static class UtlGenerator
         return token;
     }
 
-    public static string Jwt(ConfJwt confJwt, string claim, int expMinutes)
+    public static string Jwt(ConfJwt confJwt, IMClaim claim, int expMinutes)
     {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confJwt.Key));
+
         return "";
     }
 }
