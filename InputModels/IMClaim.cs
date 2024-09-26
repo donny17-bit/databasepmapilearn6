@@ -43,6 +43,7 @@ public class IMClaim
         };
     }
 
+    // ntar cari tahu cara kerjanya kek mana
     public Claim[] ToClaim() {
         return new Claim[] {
             new(JwtRegisteredClaimNames.UniqueName, Username),

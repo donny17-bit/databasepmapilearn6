@@ -27,15 +27,21 @@ public static class UtlGenerator
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confJwt.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
+        // ambil claim
+        var claims = claim.ToClaim();
+
+        // create secure token
+        var secureToken = new JwtSecurityToken(
             issuer: confJwt.Issuer,
             audience: confJwt.Audience,
-            // claims: claim,
+            claims: claims,
             expires: DateTime.Now.AddMinutes(expMinutes),
             signingCredentials: credentials
         );
 
+        // create token from secure token
+        var token = new JwtSecurityTokenHandler().WriteToken(secureToken);
 
-        return "";
+        return token;
     }
 }

@@ -91,9 +91,9 @@ namespace databasepmapilearn6.Controllers
             // create claim
             var claim = IMClaim.FromDb(user);
 
-            // create jwt token (blm dibuat classnya)
-            var Jwt = UtlGenerator.Jwt(_confJwt, claim, 10);
-            
+            // create jwt token
+            var Jwt = UtlGenerator.Jwt(_confJwt, claim, 60);
+
 
             // update data user
             user.RetryCount = 0;
