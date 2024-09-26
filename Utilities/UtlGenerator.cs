@@ -28,13 +28,13 @@ public static class UtlGenerator
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         // ambil claim
-        var claims = claim.ToClaim();
+        var c = claim.ToClaim();
 
         // create secure token
         var secureToken = new JwtSecurityToken(
             issuer: confJwt.Issuer,
             audience: confJwt.Audience,
-            claims: claims,
+            claims: c,
             expires: DateTime.Now.AddMinutes(expMinutes),
             signingCredentials: credentials
         );

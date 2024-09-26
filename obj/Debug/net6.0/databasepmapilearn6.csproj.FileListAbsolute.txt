@@ -251,3 +251,5 @@ D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.Extensions.Configura
 D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
 D:\Code\.net\databasepmapilearn6\obj\Debug\net6.0\databasepmapilearn6.sourcelink.json
 D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.Extensions.Logging.Abstractions.dll
+d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll

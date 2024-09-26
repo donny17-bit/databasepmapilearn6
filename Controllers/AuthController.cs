@@ -7,6 +7,7 @@ using databasepmapilearn6.Constans;
 using databasepmapilearn6.Configurations;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -95,7 +96,7 @@ namespace databasepmapilearn6.Controllers
             var Jwt = UtlGenerator.Jwt(_confJwt, claim, 60);
 
             // save refersh token and access token to model auth
-            // var vm = VMA
+            var res = VMAuth.Login.Success(Jwt, RefreshToken);
 
             // update data user
             user.RetryCount = 0;
@@ -116,7 +117,7 @@ namespace databasepmapilearn6.Controllers
             var response = new {
                 user.Email,
                 user.Username,
-                user.RefreshToken
+                jwt = res
             };
 
             return Ok(response);

@@ -10,7 +10,7 @@ public class VMAuth
 
         private Login() {}
 
-        public Login Success(string Token, string RefreshToken) {
+        public static Login Success(string Token, string RefreshToken) {
             return new Login{
                 IsWrongPassword = false,
                 Token = Token,

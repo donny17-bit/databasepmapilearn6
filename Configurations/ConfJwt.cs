@@ -9,5 +9,5 @@ public class ConfJwt
     public string Audience {get; set;} = null!;
 
     // Signed key
-    public string Key {get; set;} = null!;
+    public string Key {get; set;}
 }

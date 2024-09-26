@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "E79UvAYOIxg=",
+  "dgSpecHash": "s8Wh0TNVtj0=",
   "success": true,
-  "projectFilePath": "D:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj",
+  "projectFilePath": "d:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\doniw\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\doniw\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

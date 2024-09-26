@@ -3,6 +3,7 @@ using databasepmapilearn6.models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using databasepmapilearn6.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtAudiance = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
 
 // Add services to the container.
+builder.Services.Configure<ConfJwt>(builder.Configuration.GetSection("Jwt")); // configure ConfJwt to the main program
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
