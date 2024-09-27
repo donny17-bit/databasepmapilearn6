@@ -111,7 +111,11 @@ namespace databasepmapilearn6.Controllers
           };
 
           var res = new {
-            mUser,
+            roleId = mUser.RoleId,
+            positionId = mUser.PositionId,
+            username = mUser.Username,
+            name = mUser.Name,
+            email = mUser.Email,
             password = rawPassword
           };
 
