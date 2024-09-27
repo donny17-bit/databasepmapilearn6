@@ -13,4 +13,13 @@ public class IMAuth
         [Required]
         public string Password {get; set;} = null!;
     }
+
+    public class ChangePassword
+    {
+        [Required]
+        public string OldPassword {get; set;} = null!;
+
+        [Required]
+        public string NewPassword {get; set;} = null!;
+    }
 }
