@@ -28,7 +28,7 @@ namespace databasepmapilearn6.Controllers
 
         // POST : api/auth
         [HttpPost]
-        public async Task<ActionResult> Login([FromBody] IMAuth.Login mUser)
+        public async Task<ActionResult> Login([FromBody] IMAuth.Login input)
         {
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
@@ -46,12 +46,12 @@ namespace databasepmapilearn6.Controllers
             // .Include(m => m.Role)
             .Where(m => 
                 // cari username
-                (m.Username == mUser.Username) && 
+                (m.Username == input.Username) && 
                 // akun tidak di delete
                 (!m.IsDeleted))
             .SingleOrDefaultAsync(); 
             // nnti dibikin catatan dokumentasi perbedaan pake where atau ngga nya
-            // .SingleOrDefaultAsync(m => m.Username == mUser.Username)
+            // .SingleOrDefaultAsync(m => m.Username == input.Username)
 
             // check user on the DB or not
             if (user == null) return BadRequest("user is not on the DB");
@@ -61,7 +61,7 @@ namespace databasepmapilearn6.Controllers
 
             // check password
             // password salah 
-            if (mUser.Password != user.Password) {
+            if (!UtlSecurity.ValidatePassword(user.Password, input.Password)) {
 
                 user.RetryCount += 1; // masih hardcode blm dibuat private variable
 
