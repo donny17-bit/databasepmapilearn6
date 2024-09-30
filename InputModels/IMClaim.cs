@@ -10,10 +10,10 @@ public class IMClaim
 {
     public int Id {get; set;}
     public string Username {get; set;} = null!;
-    public string Name {get; set;} = null!;
-    public string Email {get; set;} = null!;
     public int RoleId {get; set;}
     public int PositionId {get; set;}
+    public string Name {get; set;} = null!;
+    public string Email {get; set;} = null!;
 
     // private constractor
     private IMClaim() {}
@@ -23,11 +23,14 @@ public class IMClaim
         return new IMClaim {
             Id = userClaims.GetUserId(),
             Username = userClaims.GetUsername(),
-            Name = userClaims.GetName(),
-            Email = userClaims.GetEmail(),
             RoleId = userClaims.GetRoleId(),
-            PositionId = userClaims.GetPositionId()
+            PositionId = userClaims.GetPositionId(),
+            Name = userClaims.GetName(),
+            Email = userClaims.GetEmail()
         };
+        // note 
+        // parameter name on ExtClaim must be same as CClaim
+        // include uppercase and lowercase letter
     }
 
     
@@ -36,24 +39,25 @@ public class IMClaim
         return new IMClaim {
             Id = userClaims.Id,
             Username = userClaims.Username,
-            Name = userClaims.Name,
-            Email = userClaims.Email,
             RoleId = userClaims.RoleId,
-            PositionId = userClaims.PositionId
+            PositionId = userClaims.PositionId,
+            Name = userClaims.Name,
+            Email = userClaims.Email
         };
     }
 
     // ntar cari tahu cara kerjanya kek mana
     public Claim[] ToClaim() {
         return new Claim[] {
+            new(JwtRegisteredClaimNames.UniqueName, Username),
+            new(ClaimTypes.Role, RoleId.ToString()),
+
             new(CClaim.Id, Id.ToString()),
             new(CClaim.Username, Username),
-            new(JwtRegisteredClaimNames.UniqueName, Username),
+            new(CClaim.RoleId, RoleId.ToString() ?? "-999"),
+            new(CClaim.PositionId, PositionId.ToString()),
             new(CClaim.Name, Name),
             new(CClaim.Email, Email ?? ""),
-            new(ClaimTypes.Role, RoleId.ToString()),
-            new(CClaim.RoleId, RoleId.ToString()),
-            new(CClaim.PositionId, PositionId.ToString()),
         };
     }
 }

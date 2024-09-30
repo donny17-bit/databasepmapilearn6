@@ -12,10 +12,10 @@ public static class ExtClaim
     
     
     // get the properties from claim
-    public static int GetUserId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("id");
-    public static string GetUsername(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("username");
-    public static string GetName(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("name");
-    public static string GetEmail(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("email");
-    public static int GetRoleId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("role_id");
-    public static int GetPositionId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("position_id");
+    public static int GetUserId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("Id");
+    public static string GetUsername(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("Username");
+    public static string GetName(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("Name");
+    public static string GetEmail(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("Email");
+    public static int GetRoleId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("RoleId");
+    public static int GetPositionId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("PositionId");
 }

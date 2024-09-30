@@ -27,7 +27,7 @@ public static class UtlGenerator
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confJwt.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        // ambil claim
+        // buat claim
         var c = claim.ToClaim();
 
         // create secure token
