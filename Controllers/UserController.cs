@@ -223,5 +223,56 @@ namespace databasepmapilearn6.Controllers
             return Ok("Success delete user");
         }
 
+        [HttpPut("resetPassword/{id}")]
+        public async Task<ActionResult> ResetPassword(int id) 
+        {
+            if (_context.MUser == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MUser' is null.");
+            }
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // check role id
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to reset password");
+
+            // get user from database
+            var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+
+            // check if user null or not
+            if (user == null) return BadRequest($"user with ID: {id} is not found");
+
+            // check if role user admin or not 
+            if (user.RoleId == 1 || user.RoleId == 2) return BadRequest("admin cannot reset password");
+
+            // generate password 
+            var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
+
+            user.Password = hashedPassword;
+            user.UpdatedBy = iClaim.Id;
+            user.UpdatedDate = DateTime.Now;
+
+            var res = new {
+                user.Username,
+                password = rawPassword,
+                message = "reset password success"
+            };
+
+            try
+            {
+                // update
+                _context.MUser.Update(user);
+
+                // commit
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest($"Error on reset password User on UserController API : {e}");
+            }
+
+            return Ok(res);
+        }
     }
 }
