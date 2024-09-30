@@ -57,36 +57,76 @@ namespace databasepmapilearn6.Controllers
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMUser(int id, MUser mUser)
+        public async Task<IActionResult> PutMUser(int id, [FromBody] IMUser.Edit input)
         {
-            if (id != mUser.Id)
+            if (_context.MUser == null)
             {
-                return BadRequest();
+                return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
 
-            _context.Entry(mUser).State = EntityState.Modified;
+            // check input is valid or not
+            // return bad request if it's invalid 
+            // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
+            // in other word this used to return badrequest response if it's invalid
+            if(!ModelState.IsValid) return BadRequest();
 
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+            // check the role 
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("user don't have permission to edit user");
+
+            // ambil data user from DB
+            var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+
+            // check if username exist on DB or not
+            if (user == null) return BadRequest("username not found");
+
+            // check role user
+            if (user.RoleId == 1) return BadRequest("this user cannot be edit");
+
+            // check username on the database
+            if (user.Username != input.Username) {
+                var username = await _context.MUser.Where(m => (m.Username == input.Username) && (!m.IsDeleted)).SingleOrDefaultAsync();
+                if (username != null) return BadRequest("Username already exists");
+            }
+            
+            // check email on the database
+            if (user.Email != input.Email) {
+                var email = await _context.MUser.Where(m => (m.Email == input.Email) && (!m.IsDeleted)).SingleOrDefaultAsync();
+                if (email != null) return BadRequest("email already exists");
+            }
+            
+            // edit user data
+            user.RoleId = input.RoleId;
+            user.PositionId = input.PositionId;
+            user.Username = input.Username;
+            user.Name = input.Name;
+            user.Email = input.Email;
+            user.UpdatedBy = iClaim.Id;
+            user.UpdatedDate = DateTime.Now;
+
+            var res = new {
+                username = user.Username,
+                message = "Success edit user"
+            };
+            
             try
-            {
+            {   
+                // update
+                _context.MUser.Update(user);
+
+                // commit
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (System.Exception e)
             {
-                if (!MUserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest($"Error occured in edit user in UserController : {e}");
             }
 
-            return NoContent();
+            return Ok(res);
         }
 
         // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<MUser>> PostUser([FromBody] IMUser.Create mUser)
         {
@@ -111,10 +151,10 @@ namespace databasepmapilearn6.Controllers
                 Name = mUser.Name,
                 Email = mUser.Email,
                 Password = hashedPassword, 
-                RetryCount = 0, // sementara hardcode dulu
+                RetryCount = 0, 
                 CreatedBy = iClaim.Id, 
                 CreatedDate = DateTime.Now,
-                IsDeleted = false // sementara hardcode dulu
+                IsDeleted = false
             };
 
             var res = new {

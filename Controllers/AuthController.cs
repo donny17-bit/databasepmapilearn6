@@ -145,8 +145,6 @@ namespace databasepmapilearn6.Controllers
             // User object auto generate from system security
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
-            Console.WriteLine(iClaim.Id);
-
             // get password from DB using id
             var user = await _context.MUser.Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted)).SingleOrDefaultAsync();
             if (user == null) return Problem("user on changePassword AuthController is null");

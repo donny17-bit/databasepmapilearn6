@@ -26,8 +26,21 @@ public class IMUser
 
     }
 
-    public class Input
+    public class Edit
     {
+        [Required]
+        public int RoleId {get; set;}
 
+        [Required]
+        public int PositionId {get; set;}
+
+        [Required]
+        public string Username {get; set;} = null!;
+
+        [Required]
+        public string Name {get; set;} = null!;
+
+        [Required]
+        public string Email {get; set;} = null!;
     }
 }
