@@ -15,7 +15,7 @@ public static class ExtClaim
     public static int GetUserId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("id");
     public static string GetUsername(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("username");
     public static string GetName(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("name");
-    public static string GetEmail(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("useremail");
+    public static string GetEmail(this IEnumerable<Claim> userClaim) => userClaim.ClaimToString("email");
     public static int GetRoleId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("role_id");
     public static int GetPositionId(this IEnumerable<Claim> userClaim) => userClaim.ClaimToInt("position_id");
 }

@@ -46,14 +46,14 @@ public class IMClaim
     // ntar cari tahu cara kerjanya kek mana
     public Claim[] ToClaim() {
         return new Claim[] {
-            new(JwtRegisteredClaimNames.UniqueName, Username),
-            new(ClaimTypes.Role, RoleId.ToString()),
             new(CClaim.Id, Id.ToString()),
             new(CClaim.Username, Username),
+            new(JwtRegisteredClaimNames.UniqueName, Username),
             new(CClaim.Name, Name),
-            new(CClaim.PositionId, PositionId.ToString()),
-            new(CClaim.RoleId, RoleId.ToString()),
             new(CClaim.Email, Email ?? ""),
+            new(ClaimTypes.Role, RoleId.ToString()),
+            new(CClaim.RoleId, RoleId.ToString()),
+            new(CClaim.PositionId, PositionId.ToString()),
         };
     }
 }

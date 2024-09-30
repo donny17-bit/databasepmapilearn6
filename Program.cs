@@ -25,7 +25,9 @@ builder.Services.AddDbContext<DatabasePmContext>(options =>
 
 // add JWT service
 // ntar cari tau cara bacanya
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer( // default
+// builder.Services.AddAuthentication("Bearer").AddJwtBearer(
+    // "Bearer",
     options => 
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -53,6 +55,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication(); // add this for using JWT
 app.UseAuthorization();
 
 app.MapControllers();

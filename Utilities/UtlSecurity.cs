@@ -6,11 +6,11 @@ namespace databasepmapilearn6.Utilities;
 
 public class UtlSecurity 
 {
-    public static string HashedPassword(string password)
+    public static string HashedPassword(string rawPassword)
     {
         // encryption password
         var salt = Salt(16);
-        var hash = Hash(password, salt);
+        var hash = Hash(rawPassword, salt);
         var stringSalt = Convert.ToBase64String(salt);
         var hashedPassword = $"{stringSalt}:{hash}";
 
@@ -35,18 +35,18 @@ public class UtlSecurity
         return (randomPassword, hashedPassword); 
     }
 
-    public static bool ValidatePassword(string hashedPassword, string password)
+    public static bool ValidatePassword(string hashedPassword, string rawPassword)
     {
         string[] parts = hashedPassword.Split(":");
         byte[] salt = Convert.FromBase64String(parts[0]);
-        string hash = Hash(password, salt);
+        string hash = Hash(rawPassword, salt);
 
         // int valid = parts[1].CompareTo(hash);
         return parts[1].Equals(hash);
     }
 
 
-    public static byte[] Salt(int length)
+    private static byte[] Salt(int length)
     {
         var salt = RandomNumberGenerator.GetBytes(length);
 
@@ -59,7 +59,7 @@ public class UtlSecurity
         return salt; 
     }
 
-    public static string Hash(string password, byte[] salt)
+    private static string Hash(string password, byte[] salt)
     {
         // Hash reference : https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/consumer-apis/password-hashing?view=aspnetcore-8.0
         // hashing is one way encryption

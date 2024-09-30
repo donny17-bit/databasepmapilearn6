@@ -8,10 +8,10 @@ using databasepmapilearn6.Configurations;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 using databasepmapilearn6.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace databasepmapilearn6.Controllers
 {
-    [Route("/api/login")]
     [ApiController]
     public class AuthController : ControllerBase 
     {
@@ -27,6 +27,7 @@ namespace databasepmapilearn6.Controllers
         // private const int CL_MAX_RETRY_COUNT = 2;
 
         // POST : api/auth
+        [Route("api/[action]")]
         [HttpPost]
         public async Task<ActionResult> Login([FromBody] IMAuth.Login input)
         {
@@ -113,7 +114,7 @@ namespace databasepmapilearn6.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest($"Error on the Login right password API : {e}");
+                return BadRequest($"Error on the Login AuthController API : {e}");
             }
             
             // create response object
@@ -125,7 +126,59 @@ namespace databasepmapilearn6.Controllers
 
             return Ok(response);
         }
+        
+        [Route("api/[action]")]
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input) 
+        {
+            if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
-        public async Task<ActionResult> ChangePassword([FromBody] )
+            // check input is valid or not
+            // return bad request if it's invalid 
+            // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
+            // in other word this used to return badrequest response if it's invalid
+            if(!ModelState.IsValid) return BadRequest();
+
+            // ambil claim from user
+            // cari tau User itu dari mana
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // get password from DB using username
+            var user = await _context.MUser.Where(m => (m.Username == iClaim.Username) && (!m.IsDeleted)).SingleOrDefaultAsync();
+
+            if (user == null) return Problem("user on changePassword AuthController is null");
+
+            // validate old password
+            bool validate = UtlSecurity.ValidatePassword(user.Password, input.OldPassword);
+
+            // old password wrong
+            if (!validate) {
+                return BadRequest("Old Password is incorrect");
+            }
+
+            // old password correct
+            string hashedNewPassword = UtlSecurity.HashedPassword(input.NewPassword);
+
+            user.Password = hashedNewPassword;
+
+            try
+            {
+                _context.MUser.Update(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest($"Error on the ChangePassword AuthPassword API : {e}");
+            }
+
+            var response = new {
+                user.Email,
+                user.Username,
+                Message = "change password success"
+            };
+
+            return Ok(response);
+        }
     }
 }
