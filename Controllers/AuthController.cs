@@ -144,9 +144,8 @@ namespace databasepmapilearn6.Controllers
             // cari tau User itu dari mana
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
-            // get password from DB using username
-            var user = await _context.MUser.Where(m => (m.Username == iClaim.Username) && (!m.IsDeleted)).SingleOrDefaultAsync();
-
+            // get password from DB using id
+            var user = await _context.MUser.Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted)).SingleOrDefaultAsync();
             if (user == null) return Problem("user on changePassword AuthController is null");
 
             // validate old password
@@ -161,10 +160,15 @@ namespace databasepmapilearn6.Controllers
             string hashedNewPassword = UtlSecurity.HashedPassword(input.NewPassword);
 
             user.Password = hashedNewPassword;
+            user.UpdatedBy = iClaim.Id;
+            user.UpdatedDate = DateTime.Now;
 
             try
             {
+                // update
                 _context.MUser.Update(user);
+
+                // commit
                 await _context.SaveChangesAsync();
             }
             catch (System.Exception e)
