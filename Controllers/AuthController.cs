@@ -142,7 +142,10 @@ namespace databasepmapilearn6.Controllers
 
             // ambil claim from user
             // cari tau User itu dari mana
+            // User object auto generate from system security
             var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            Console.WriteLine(iClaim.Id);
 
             // get password from DB using id
             var user = await _context.MUser.Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted)).SingleOrDefaultAsync();

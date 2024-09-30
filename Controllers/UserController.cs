@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
 using databasepmapilearn6.Utilities;
+using databasepmapilearn6.InputModels;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -86,49 +90,52 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MUser>> PostUser([FromBody] IMUser.Create mUser)
         {
-            //  nnti diberi validasi cek role user sebelum create akun user
+            if (_context.MUser == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MUser' is null.");
+            }
 
-          if (_context.MUser == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MUser' is null.");
-          }
 
-       
-        // generate random password
-        var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
+            // validasi cek role user sebelum create akun user
+            // User object auto generate from system security
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("user don't have permission to create user");
 
-          var User = new MUser {
-            RoleId = mUser.RoleId,
-            PositionId = mUser.PositionId,
-            Username = mUser.Username,
-            Name = mUser.Name,
-            Email = mUser.Email,
-            Password = hashedPassword, // sementara ambil dari user 
-            RetryCount = 0, // sementara hardcode dulu
-            CreatedBy = 2, // sementara hardcode dulu  
-            CreatedDate = DateTime.Now,
-            IsDeleted = false // sementara hardcode dulu
-          };
+            // generate random password
+            var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
 
-          var res = new {
-            roleId = mUser.RoleId,
-            positionId = mUser.PositionId,
-            username = mUser.Username,
-            name = mUser.Name,
-            email = mUser.Email,
-            password = rawPassword
-          };
+            var user = new MUser {
+                RoleId = mUser.RoleId,
+                PositionId = mUser.PositionId,
+                Username = mUser.Username,
+                Name = mUser.Name,
+                Email = mUser.Email,
+                Password = hashedPassword, 
+                RetryCount = 0, // sementara hardcode dulu
+                CreatedBy = iClaim.Id, 
+                CreatedDate = DateTime.Now,
+                IsDeleted = false // sementara hardcode dulu
+            };
 
-          try {
-            await _context.MUser.AddAsync(User);
-            await _context.SaveChangesAsync();
+            var res = new {
+                roleId = mUser.RoleId,
+                positionId = mUser.PositionId,
+                username = mUser.Username,
+                name = mUser.Name,
+                email = mUser.Email,
+                password = rawPassword
+            };
 
-             // when success return success code and send user information
-            return Created("/api/user", res);
-          }
-          catch {  
-            return BadRequest("Error on the API"); // change the error response later
-          }
+            try {
+                await _context.MUser.AddAsync(user);
+                await _context.SaveChangesAsync();
+
+                // when success return success code and send user information
+                return Created("/api/user", res);
+            }
+            catch {  
+                return BadRequest("Error on the API"); // change the error response later
+            }
         }
 
         // DELETE: api/User/5
