@@ -9,6 +9,7 @@ using databasepmapilearn6.models;
 using databasepmapilearn6.Utilities;
 using databasepmapilearn6.InputModels;
 using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.ViewModels;
 
 
 namespace databasepmapilearn6.Controllers
@@ -29,16 +30,28 @@ namespace databasepmapilearn6.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MUser>>> GetMUser()
         {
-          if (_context.MUser == null)
-          {
-              return NotFound();
-          }
-            return await _context.MUser.ToListAsync();
+            if (_context.MUser == null)
+            {
+                return NotFound();
+            }
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // get user from db
+            var user = await _context.MUser.Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+
+            // check if user null
+            if (user == null) return BadRequest("user not found on the database");
+
+            var res = VMUser.Detail.FromDb(user);
+
+            return Ok(res);
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MUser>> GetMUser(int id)
+        public async Task<ActionResult<MUser>> GetMUserDetail(int id)
         {
           if (_context.MUser == null)
           {
@@ -55,7 +68,6 @@ namespace databasepmapilearn6.Controllers
         }
 
         // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMUser(int id, [FromBody] IMUser.Edit input)
         {
@@ -223,6 +235,7 @@ namespace databasepmapilearn6.Controllers
             return Ok("Success delete user");
         }
 
+        // PUT: api/User/resetPassword/5
         [HttpPut("resetPassword/{id}")]
         public async Task<ActionResult> ResetPassword(int id) 
         {
