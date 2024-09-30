@@ -79,7 +79,7 @@ namespace databasepmapilearn6.Controllers
             var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
 
             // check if username exist on DB or not
-            if (user == null) return BadRequest("username not found");
+            if (user == null) return BadRequest("user not found");
 
             // check role user
             if (user.RoleId == 1) return BadRequest("this user cannot be edit");
@@ -184,23 +184,44 @@ namespace databasepmapilearn6.Controllers
         {
             if (_context.MUser == null)
             {
-                return NotFound();
+                return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
-            var mUser = await _context.MUser.FindAsync(id);
-            if (mUser == null)
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+            // check role id
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to delete user");
+
+            // check MJobFile
+            // belum ditambahkan 
+
+            // get user data
+            var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+            if (user == null) return BadRequest("User not found in the Database");
+
+            // check target id 
+            if (user.RoleId == 1 || user.RoleId == 2) return BadRequest("admin user cannot be deleted");
+
+            user.IsDeleted = true;
+            user.UpdatedBy = iClaim.Id;
+            user.UpdatedDate = DateTime.Now;
+
+            try
             {
-                return NotFound();
+                // save
+                _context.MUser.Update(user);
+
+                // commit
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception e)
+            {
+                
+                return BadRequest($"Error on the delete User API : {e}");
             }
 
-            _context.MUser.Remove(mUser);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok("Success delete user");
         }
 
-        private bool MUserExists(int id)
-        {
-            return (_context.MUser?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }
