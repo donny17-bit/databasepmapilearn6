@@ -47,12 +47,13 @@ namespace databasepmapilearn6.Controllers
             var RoleId = HttpContext.User.Claims.GetRoleId();
 
             // get menu by role_id from db
-            var RoleMenu = await _context.MRoleMenu.Where(m => m.RoleId == RoleId).ToListAsync();
+            var RoleMenu = await _context.MRoleMenu
+                .Include(m => m.Menu)
+                .Where(m => (m.RoleId == RoleId) && (!m.Menu.IsDeleted)).ToListAsync();
 
-            if (RoleMenu == null) return BadRequest("user role don't have menus");
+            if (RoleMenu == null) return BadRequest("user role don't have menu");
 
             return Ok(RoleMenu);
-            // return await _context.MMenus.ToListAsync();
         }
 
         // GET: api/Menu/5
