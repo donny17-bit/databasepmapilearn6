@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.InputModels;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -53,7 +54,10 @@ namespace databasepmapilearn6.Controllers
 
             if (RoleMenu == null) return BadRequest("user role don't have menu");
 
-            return Ok(RoleMenu);
+            var res = VMRoleMenu.Menu.FromDb(RoleMenu);
+
+            // return Ok(RoleMenu);
+            return Ok(res);
         }
 
         // GET: api/Menu/5
