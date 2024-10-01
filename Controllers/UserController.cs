@@ -27,6 +27,7 @@ namespace databasepmapilearn6.Controllers
         }
 
         // GET: api/User
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<MUser>>> GetMUser()
         {
             if (_context.MUser == null)
@@ -77,9 +78,9 @@ namespace databasepmapilearn6.Controllers
             return Ok(res);
         }
 
-        // PUT: api/User/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMUser(int id, [FromBody] IMUser.Edit input)
+        // PUT: api/User/Edit/5
+        [HttpPut("[action]/{id}")]
+        public async Task<IActionResult> Edit(int id, [FromBody] IMUser.Edit input)
         {
             if (_context.MUser == null)
             {
@@ -148,9 +149,9 @@ namespace databasepmapilearn6.Controllers
             return Ok(res);
         }
 
-        // POST: api/User
-        [HttpPost]
-        public async Task<ActionResult<MUser>> PostUser([FromBody] IMUser.Create mUser)
+        // POST: api/User/Create
+        [HttpPost("[action]")]
+        public async Task<ActionResult<MUser>> Create([FromBody] IMUser.Create mUser)
         {
             if (_context.MUser == null)
             {
@@ -200,9 +201,9 @@ namespace databasepmapilearn6.Controllers
             }
         }
 
-        // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMUser(int id)
+        // DELETE: api/User/Delete/5
+        [HttpDelete("[action]/{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
             if (_context.MUser == null)
             {
@@ -246,7 +247,7 @@ namespace databasepmapilearn6.Controllers
         }
 
         // PUT: api/User/resetPassword/5
-        [HttpPut("resetPassword/{id}")]
+        [HttpPut("reset-password/{id}")]
         public async Task<ActionResult> ResetPassword(int id) 
         {
             if (_context.MUser == null)
