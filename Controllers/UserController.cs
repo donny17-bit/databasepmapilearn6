@@ -27,7 +27,6 @@ namespace databasepmapilearn6.Controllers
         }
 
         // GET: api/User
-        [HttpGet]
         public async Task<ActionResult<IEnumerable<MUser>>> GetMUser()
         {
             if (_context.MUser == null)
@@ -51,20 +50,31 @@ namespace databasepmapilearn6.Controllers
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MUser>> GetMUserDetail(int id)
+        public async Task<ActionResult<MUser>> GetMUserDetail(int? id)
         {
-          if (_context.MUser == null)
-          {
-              return NotFound();
-          }
-            var mUser = await _context.MUser.FindAsync(id);
-
-            if (mUser == null)
+            if (_context.MUser == null)
             {
                 return NotFound();
             }
 
-            return mUser;
+            // this id check is unneccessary
+            // because when the ID is null, router will auto chose GetMUser method (route: api/User)
+            // if(!id.HasValue) return BadRequest("please input user id");
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // check user role
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission");
+
+            // get user from db
+            var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+
+            if (user == null) return BadRequest("user not found on the database");
+
+            var res = VMUser.Detail.FromDb(user);
+
+            return Ok(res);
         }
 
         // PUT: api/User/5
