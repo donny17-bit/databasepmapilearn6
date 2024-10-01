@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.InputModels;
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RoleController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -20,33 +23,30 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
-        // GET: api/Role
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MRole>>> GetMRole()
-        {
-          if (_context.MRole == null)
-          {
-              return NotFound();
-          }
-            return await _context.MRole.ToListAsync();
-        }
-
         // GET: api/Role/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MRole>> GetMRole(int id)
         {
-          if (_context.MRole == null)
-          {
-              return NotFound();
-          }
-            var mRole = await _context.MRole.FindAsync(id);
-
-            if (mRole == null)
+            if (_context.MRole == null)
             {
                 return NotFound();
             }
 
-            return mRole;
+            // pastikan id ada
+            // if (!id.HasValue) return BadRequest("role diperlukan");
+
+            // get role id current user
+            var RoleId = IMClaim.FromUserClaim(User.Claims).RoleId;
+
+            if (RoleId != 1 && RoleId != 2) return BadRequest("you don't have permission to access");
+
+            var mRole = await _context.MRole
+                .Where(m => (m.Id == id) && (!m.IsDeleted))
+                .SingleOrDefaultAsync();
+
+            if (mRole == null) return BadRequest("Role not found in the database");
+
+            return Ok(mRole);
         }
 
         // PUT: api/Role/5
@@ -85,10 +85,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MRole>> PostMRole(MRole mRole)
         {
-          if (_context.MRole == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MRole'  is null.");
-          }
+            if (_context.MRole == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MRole'  is null.");
+            }
             _context.MRole.Add(mRole);
             await _context.SaveChangesAsync();
 
