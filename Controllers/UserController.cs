@@ -87,11 +87,15 @@ namespace databasepmapilearn6.Controllers
                 return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
 
+            // ini tidak perlu karena jika id null akan mengarah ke action lain dan itu tidak ada methodnya
+            // add check if id parameter null or not
+            // if (!id.HasValue) return BadRequest("id is null");
+
             // check input is valid or not
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
 
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
@@ -108,17 +112,19 @@ namespace databasepmapilearn6.Controllers
             if (user.RoleId == 1) return BadRequest("this user cannot be edit");
 
             // check username on the database
-            if (user.Username != input.Username) {
+            if (user.Username != input.Username)
+            {
                 var username = await _context.MUser.Where(m => (m.Username == input.Username) && (!m.IsDeleted)).SingleOrDefaultAsync();
                 if (username != null) return BadRequest("Username already exists");
             }
-            
+
             // check email on the database
-            if (user.Email != input.Email) {
+            if (user.Email != input.Email)
+            {
                 var email = await _context.MUser.Where(m => (m.Email == input.Email) && (!m.IsDeleted)).SingleOrDefaultAsync();
                 if (email != null) return BadRequest("email already exists");
             }
-            
+
             // edit user data
             user.RoleId = input.RoleId;
             user.PositionId = input.PositionId;
@@ -128,13 +134,14 @@ namespace databasepmapilearn6.Controllers
             user.UpdatedBy = iClaim.Id;
             user.UpdatedDate = DateTime.Now;
 
-            var res = new {
+            var res = new
+            {
                 username = user.Username,
                 message = "Success edit user"
             };
-            
+
             try
-            {   
+            {
                 // update
                 _context.MUser.Update(user);
 
@@ -167,20 +174,22 @@ namespace databasepmapilearn6.Controllers
             // generate random password
             var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
 
-            var user = new MUser {
+            var user = new MUser
+            {
                 RoleId = mUser.RoleId,
                 PositionId = mUser.PositionId,
                 Username = mUser.Username,
                 Name = mUser.Name,
                 Email = mUser.Email,
-                Password = hashedPassword, 
-                RetryCount = 0, 
-                CreatedBy = iClaim.Id, 
+                Password = hashedPassword,
+                RetryCount = 0,
+                CreatedBy = iClaim.Id,
                 CreatedDate = DateTime.Now,
                 IsDeleted = false
             };
 
-            var res = new {
+            var res = new
+            {
                 roleId = mUser.RoleId,
                 positionId = mUser.PositionId,
                 username = mUser.Username,
@@ -189,14 +198,16 @@ namespace databasepmapilearn6.Controllers
                 password = rawPassword
             };
 
-            try {
+            try
+            {
                 await _context.MUser.AddAsync(user);
                 await _context.SaveChangesAsync();
 
                 // when success return success code and send user information
                 return Created("/api/user", res);
             }
-            catch {  
+            catch
+            {
                 return BadRequest("Error on the API"); // change the error response later
             }
         }
@@ -239,7 +250,7 @@ namespace databasepmapilearn6.Controllers
             }
             catch (System.Exception e)
             {
-                
+
                 return BadRequest($"Error on the delete User API : {e}");
             }
 
@@ -248,7 +259,7 @@ namespace databasepmapilearn6.Controllers
 
         // PUT: api/User/resetPassword/5
         [HttpPut("reset-password/{id}")]
-        public async Task<ActionResult> ResetPassword(int id) 
+        public async Task<ActionResult> ResetPassword(int id)
         {
             if (_context.MUser == null)
             {
@@ -277,7 +288,8 @@ namespace databasepmapilearn6.Controllers
             user.UpdatedBy = iClaim.Id;
             user.UpdatedDate = DateTime.Now;
 
-            var res = new {
+            var res = new
+            {
                 user.Username,
                 password = rawPassword,
                 message = "reset password success"

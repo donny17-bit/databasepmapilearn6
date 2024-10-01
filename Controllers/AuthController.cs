@@ -37,7 +37,7 @@ namespace databasepmapilearn6.Controllers
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            // if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
 
             // konversi input ke json string
             // ini belum

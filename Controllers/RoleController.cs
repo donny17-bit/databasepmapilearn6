@@ -26,7 +26,7 @@ namespace databasepmapilearn6.Controllers
 
         // GET: api/Role/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MRole>> GetMRole(int id)
+        public async Task<ActionResult<MRole>> GetMRole(int? id)
         {
             if (_context.MRole == null)
             {
@@ -34,6 +34,7 @@ namespace databasepmapilearn6.Controllers
             }
 
             // pastikan id ada
+            // ngga terlalu pengaruh ketika di ada/ngga
             // if (!id.HasValue) return BadRequest("role diperlukan");
 
             // get role id current user
@@ -41,7 +42,7 @@ namespace databasepmapilearn6.Controllers
 
             if (RoleId != 1 && RoleId != 2) return BadRequest("you don't have permission to access");
 
-            var mRole = await _context.MRole
+            var role = await _context.MRole
                 // user
                 .Include(m => m.Users)
                 // menu & icon
@@ -50,22 +51,35 @@ namespace databasepmapilearn6.Controllers
                 .Where(m => (m.Id == id) && (!m.IsDeleted))
                 .SingleOrDefaultAsync();
 
-            if (mRole == null) return BadRequest("Role not found in the database");
+            if (role == null) return BadRequest("Role not found in the database");
 
-            var res = VMRole.Detail.FromDb(mRole);
+            var res = VMRole.Detail.FromDb(role);
 
             return Ok(res);
         }
 
         // PUT: api/Role/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMRole(int id, MRole mRole)
         {
-            if (id != mRole.Id)
-            {
-                return BadRequest();
-            }
+            if (_context.MRole == null) return Problem("Entity set 'DatabasePmContext.MRole' is null in PutMRole RoleController.");
+
+            // check input is valid or not
+            // return bad request if it's invalid 
+            // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
+            // in other word this used to return badrequest response if it's invalid
+            if (!ModelState.IsValid) return BadRequest();
+
+            // get claim (user info)
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // validate user
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to edit role");
+
+            var role = await _context.MRole
+                .Where(m => (m.Id == id) && (!m.IsDeleted))
+                .SingleOrDefaultAsync();
+
 
             _context.Entry(mRole).State = EntityState.Modified;
 
