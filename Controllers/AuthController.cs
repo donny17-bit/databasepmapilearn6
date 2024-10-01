@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Authorization;
 namespace databasepmapilearn6.Controllers
 {
     [ApiController]
-    public class AuthController : ControllerBase 
+    public class AuthController : ControllerBase
     {
-        private readonly DatabasePmContext _context;    
+        private readonly DatabasePmContext _context;
         private readonly ConfJwt _confJwt;
         public AuthController(DatabasePmContext context, IOptions<ConfJwt> optionsJwt)
         {
@@ -37,22 +37,24 @@ namespace databasepmapilearn6.Controllers
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if(!ModelState.IsValid) return BadRequest();
+            // if(!ModelState.IsValid) return BadRequest();
 
             // konversi input ke json string
             // ini belum
 
             // get data user from DB
             var user = await _context.MUser
-            // .Include(m => m.Role)
-            .Where(m => 
+            .Include(m => m.Role)
+            .Where(m =>
                 // cari username
-                (m.Username == input.Username) && 
+                (m.Username == input.Username) &&
                 // akun tidak di delete
                 (!m.IsDeleted))
-            .SingleOrDefaultAsync(); 
+            .SingleOrDefaultAsync();
             // nnti dibikin catatan dokumentasi perbedaan pake where atau ngga nya
             // .SingleOrDefaultAsync(m => m.Username == input.Username)
+
+            Console.WriteLine($"user value : {user}");
 
             // check user on the DB or not
             if (user == null) return BadRequest("user is not on the DB");
@@ -62,23 +64,25 @@ namespace databasepmapilearn6.Controllers
 
             // check password
             // password salah 
-            if (!UtlSecurity.ValidatePassword(user.Password, input.Password)) {
+            if (!UtlSecurity.ValidatePassword(user.Password, input.Password))
+            {
 
                 user.RetryCount += 1; // masih hardcode blm dibuat private variable
 
                 // lock user jika sudah banyak percobaan
-                if (user.RetryCount > 2 ) {
-                // if (user.RetryCount > CL_MAX_RETRY_COUNT) {
+                if (user.RetryCount > 2)
+                {
+                    // if (user.RetryCount > CL_MAX_RETRY_COUNT) {
 
                     user.LockedUntil = DateTime.Now.AddMinutes(5);
-                } 
+                }
 
                 // update data user on DB
                 try
                 {
                     // _context.Entry(user).State = EntityState.Modified;
                     _context.MUser.Update(user);
-                    await _context.SaveChangesAsync();   
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception e)
                 {
@@ -89,7 +93,7 @@ namespace databasepmapilearn6.Controllers
             }
 
             // password benar //
-            
+
             // create refresh token
             string RefreshToken = UtlGenerator.GenerateRandom(CDefault.TokenLength, CDefault.RandomCharRange);
 
@@ -116,9 +120,10 @@ namespace databasepmapilearn6.Controllers
             {
                 return BadRequest($"Error on the Login AuthController API : {e}");
             }
-            
+
             // create response object
-            var response = new {
+            var response = new
+            {
                 user.Email,
                 user.Username,
                 jwt = res
@@ -126,11 +131,11 @@ namespace databasepmapilearn6.Controllers
 
             return Ok(response);
         }
-        
+
         [Route("api/[action]")]
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input) 
+        public async Task<ActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input)
         {
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
@@ -138,7 +143,7 @@ namespace databasepmapilearn6.Controllers
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
 
             // ambil claim from user
             // cari tau User itu dari mana
@@ -153,7 +158,8 @@ namespace databasepmapilearn6.Controllers
             bool validate = UtlSecurity.ValidatePassword(user.Password, input.OldPassword);
 
             // old password wrong
-            if (!validate) {
+            if (!validate)
+            {
                 return BadRequest("Old Password is incorrect");
             }
 
@@ -177,7 +183,8 @@ namespace databasepmapilearn6.Controllers
                 return BadRequest($"Error on the ChangePassword AuthPassword API : {e}");
             }
 
-            var response = new {
+            var response = new
+            {
                 user.Email,
                 user.Username,
                 Message = "change password success"

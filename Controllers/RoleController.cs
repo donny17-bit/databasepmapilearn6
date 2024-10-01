@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
 using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.InputModels;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -41,10 +42,17 @@ namespace databasepmapilearn6.Controllers
             if (RoleId != 1 && RoleId != 2) return BadRequest("you don't have permission to access");
 
             var mRole = await _context.MRole
+                // user
+                .Include(m => m.Users)
+                // menu & icon
+                .Include(m => m.RoleMenus).ThenInclude(m => m.Menu).ThenInclude(m => m.Icon)
+                // filter
                 .Where(m => (m.Id == id) && (!m.IsDeleted))
                 .SingleOrDefaultAsync();
 
             if (mRole == null) return BadRequest("Role not found in the database");
+
+            // var res = VMRole.Detail.FromDb(mRole);
 
             return Ok(mRole);
         }
