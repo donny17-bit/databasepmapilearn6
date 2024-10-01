@@ -10,7 +10,7 @@ public class VMRoleMenu
         public int RoleId { get; set; }
         public int MenuId { get; set; }
         public int IconId { get; set; }
-        // public string IconName { get; set; } = null!;
+        public string IconName { get; set; } = null!;
         public int? ParentId { get; set; }
         public string Name { get; set; } = null!;
         public string? Component { get; set; }
@@ -27,7 +27,7 @@ public class VMRoleMenu
                 RoleId = mRoleMenu.RoleId,
                 MenuId = mRoleMenu.MenuId,
                 IconId = mRoleMenu.Menu.IconId,
-                // IconName = mRoleMenu.
+                IconName = mRoleMenu.Menu.Icon.Name,
                 ParentId = mRoleMenu.Menu.ParentId,
                 Name = mRoleMenu.Menu.Name,
                 Component = mRoleMenu.Menu.Component,

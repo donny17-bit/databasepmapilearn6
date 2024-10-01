@@ -29,14 +29,8 @@ namespace databasepmapilearn6.Controllers
 
         // GET: api/Menu
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MMenu>>> GetMMenus() // default
-        // public async Task<ActionResult> GetMMenus()
+        public async Task<ActionResult<IEnumerable<MMenu>>> GetMMenus()
         {
-            if (_context.MMenus == null)
-            {
-                return NotFound("MMenus not found on the menu contoller");
-            }
-
             if (_context.MRoleMenu == null)
             {
                 return NotFound("MRoleMenu not found on the menu contoller");
@@ -50,104 +44,14 @@ namespace databasepmapilearn6.Controllers
             // get menu by role_id from db
             var RoleMenu = await _context.MRoleMenu
                 .Include(m => m.Menu)
+                .ThenInclude(m => m.Icon)
                 .Where(m => (m.RoleId == RoleId) && (!m.Menu.IsDeleted)).ToListAsync();
 
             if (RoleMenu == null) return BadRequest("user role don't have menu");
 
             var res = VMRoleMenu.Menu.FromDb(RoleMenu);
 
-            // return Ok(RoleMenu);
             return Ok(res);
-        }
-
-        // GET: api/Menu/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MMenu>> GetMMenu(int id)
-        {
-            if (_context.MMenus == null)
-            {
-                return NotFound();
-            }
-            var mMenu = await _context.MMenus.FindAsync(id);
-
-            if (mMenu == null)
-            {
-                return NotFound();
-            }
-
-            return mMenu;
-        }
-
-
-        // PUT: api/Menu/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMMenu(int id, MMenu mMenu)
-        {
-            if (id != mMenu.ID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(mMenu).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MMenuExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Menu
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<MMenu>> PostMMenu(MMenu mMenu)
-        {
-            if (_context.MMenus == null)
-            {
-                return Problem("Entity set 'DatabasePmContext.MMenus'  is null.");
-            }
-            _context.MMenus.Add(mMenu);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMMenu", new { id = mMenu.ID }, mMenu);
-        }
-
-        // DELETE: api/Menu/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMMenu(int id)
-        {
-            if (_context.MMenus == null)
-            {
-                return NotFound();
-            }
-            var mMenu = await _context.MMenus.FindAsync(id);
-            if (mMenu == null)
-            {
-                return NotFound();
-            }
-
-            _context.MMenus.Remove(mMenu);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MMenuExists(int id)
-        {
-            return (_context.MMenus?.Any(e => e.ID == id)).GetValueOrDefault();
         }
     }
 }
