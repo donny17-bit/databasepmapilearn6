@@ -4,7 +4,16 @@ namespace databasepmapilearn6.InputModels;
 
 public class IMRole
 {
-    public class Edit
+    public class CreateRole
+    {
+        [Required]
+        public string Name { get; set; } = null!;
+
+        [Required]
+        public List<int> MenuId { get; set; } = null!;
+        // public int MenuId { get; set; }
+    }
+    public class EditRole
     {
         [Required]
         public string Name { get; set; } = null!;

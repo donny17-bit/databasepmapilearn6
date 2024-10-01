@@ -158,7 +158,7 @@ namespace databasepmapilearn6.Controllers
 
         // POST: api/User/Create
         [HttpPost("[action]")]
-        public async Task<ActionResult<MUser>> Create([FromBody] IMUser.Create mUser)
+        public async Task<ActionResult<MUser>> CreateUser([FromBody] IMUser.Create mUser)
         {
             if (_context.MUser == null)
             {
