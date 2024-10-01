@@ -52,9 +52,9 @@ namespace databasepmapilearn6.Controllers
 
             if (mRole == null) return BadRequest("Role not found in the database");
 
-            // var res = VMRole.Detail.FromDb(mRole);
+            var res = VMRole.Detail.FromDb(mRole);
 
-            return Ok(mRole);
+            return Ok(res);
         }
 
         // PUT: api/Role/5
