@@ -2,14 +2,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace databasepmapilearn6.models;
 
-public class DatabasePmContext : DbContext {
-    public DatabasePmContext(DbContextOptions<DatabasePmContext> options) : base (options) {}
+public class DatabasePmContext : DbContext
+{
+    public DatabasePmContext(DbContextOptions<DatabasePmContext> options) : base(options) { }
 
-    public DbSet<MMenu> MMenus {get; set;} = null!;
-    public DbSet<MPosition> MPositions {get; set;} = null!;
-    public DbSet<MProject> MProjects {get; set;} = null!;
-    public DbSet<MApproval> MApprovals {get; set;} = null!;
-    public DbSet<MApprovalDetail> MApprovalDetails {get; set;} = null!;
+    public DbSet<MMenu> MMenus { get; set; } = null!;
+    public DbSet<MPosition> MPositions { get; set; } = null!;
+    public DbSet<MProject> MProjects { get; set; } = null!;
+    public DbSet<MApproval> MApprovals { get; set; } = null!;
+    public DbSet<MApprovalDetail> MApprovalDetails { get; set; } = null!;
     public DbSet<MFileCategory>? MFileCategory { get; set; }
     public DbSet<MFileType>? MFileType { get; set; }
     public DbSet<MHoliday>? MHoliday { get; set; }
