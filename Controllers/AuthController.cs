@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 using databasepmapilearn6.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.Responses;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -31,7 +32,7 @@ namespace databasepmapilearn6.Controllers
         // POST : api/auth
         [Route("login")]
         [HttpPost]
-        public async Task<ActionResult> Login([FromBody] IMAuth.Login input)
+        public async Task<IActionResult> Login([FromBody] IMAuth.Login input)
         {
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
@@ -123,15 +124,15 @@ namespace databasepmapilearn6.Controllers
                 return BadRequest($"Error on the Login AuthController API : {e}");
             }
 
-            // create response object
-            var response = new
-            {
-                user.Email,
-                user.Username,
-                jwt = res
-            };
+            // // create response object
+            // var response = new
+            // {
+            //     user.Email,
+            //     user.Username,
+            //     jwt = res
+            // };
 
-            return Ok(response);
+            return Res.Success(res);
         }
 
         [Route("[action]")]
