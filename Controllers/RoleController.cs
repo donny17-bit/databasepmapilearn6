@@ -76,9 +76,38 @@ namespace databasepmapilearn6.Controllers
             // validate user
             if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to edit role");
 
-            var role = await _context.MRole
+            // get role from the DB
+            var RoleName = await _context.MRole
+                .Include(m => m.RoleMenus).ThenInclude(m => m.Menu).ThenInclude(m => m.Icon)
                 .Where(m => (m.Id == id) && (!m.IsDeleted))
                 .SingleOrDefaultAsync();
+
+            if (RoleName == null) return BadRequest("Role not found in the database");
+
+            // change role name
+            RoleName.Name = input.Name;
+            RoleName.UpdatedBy = iClaim.Id;
+            RoleName.UpdatedDate = DateTime.Now;
+
+            // get all menu id from database
+            List<int> MenuIdList = RoleName.RoleMenus.Select(m => m.MenuId).ToList();
+
+            // edit menu id
+            var RoleMenus = RoleName.RoleMenus.Where(m => !input.MenuId.Contains(m.MenuId));
+
+            // update 
+            // blm tau cara bacanya
+            RoleName.RoleMenus.Where(m => input.MenuId.Contains(m.MenuId)).Select(m =>
+            {
+                int insert = input.MenuId.Single(n => n == m.MenuId);
+                return m;
+            }).ToList();
+
+            // insert
+            // lanjut nnti
+
+
+            Console.WriteLine($"isi dari RoleMenus : {RoleMenus}");
 
             try
             {
@@ -98,7 +127,7 @@ namespace databasepmapilearn6.Controllers
         {
             if (_context.MRole == null)
             {
-                return Problem("Entity set 'DatabasePmContext.MRole'  is null.");
+                return Problem("Entity set 'DatabasePmContext.MRole' is null.");
             }
 
             // check input is valid or not
@@ -127,6 +156,7 @@ namespace databasepmapilearn6.Controllers
                         MenuId = m
                     }).ToList()
                 ),
+                // bingung sampai sini
                 CreatedBy = iClaim.Id,
                 CreatedDate = DateTime.Now,
                 IsDeleted = false
@@ -151,18 +181,36 @@ namespace databasepmapilearn6.Controllers
         {
             if (_context.MRole == null)
             {
-                return NotFound();
+                return Problem("Entity set 'DatabasePmContext.MRole' is null.");
             }
-            var mRole = await _context.MRole.FindAsync(id);
-            if (mRole == null)
+
+            // get current user role 
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to delete role");
+
+            // get role from DB
+            var RoleName = await _context.MRole.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+            if (RoleName == null) return BadRequest("Role not found on the Database");
+
+            // modify is delete
+            RoleName.UpdatedBy = iClaim.Id;
+            RoleName.UpdatedDate = DateTime.Now;
+            RoleName.IsDeleted = true;
+
+            try
             {
-                return NotFound();
+                // save
+                _context.MRole.Update(RoleName);
+
+                // commit
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest($"Error on create role in RoleController : {e}");
             }
 
-            _context.MRole.Remove(mRole);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok($"Success delele role dengan ID : {id}");
         }
 
         private bool MRoleExists(int id)

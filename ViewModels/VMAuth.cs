@@ -4,10 +4,10 @@ public class VMAuth
 {
     public class Login
     {
-        public bool IsWrongPassword { get; set; }
-        public string? Token { get; set; }
-        public string? RefreshToken { get; set; }
-        public string? ErrorMessage { get; set; }
+        public bool is_wrong_password { get; set; }
+        public string? token { get; set; }
+        public string? refresh_token { get; set; }
+        public string? error_message { get; set; }
 
         // private Login() {}
 
@@ -15,9 +15,9 @@ public class VMAuth
         {
             return new Login
             {
-                IsWrongPassword = false,
-                Token = Token,
-                RefreshToken = RefreshToken
+                is_wrong_password = false,
+                token = Token,
+                refresh_token = RefreshToken
             };
         }
     }

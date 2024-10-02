@@ -12,12 +12,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace databasepmapilearn6.Controllers
 {
-    [ApiController]
-    public class AuthController : ControllerBase
+    [Route("api/[controller]")]
+    [AllowAnonymous]
+    // [ApiController]
+    public class AuthenticationController : ControllerBase
     {
         private readonly DatabasePmContext _context;
         private readonly ConfJwt _confJwt;
-        public AuthController(DatabasePmContext context, IOptions<ConfJwt> optionsJwt)
+        public AuthenticationController(DatabasePmContext context, IOptions<ConfJwt> optionsJwt)
         {
             _context = context;
             _confJwt = optionsJwt.Value;
@@ -27,7 +29,7 @@ namespace databasepmapilearn6.Controllers
         // private const int CL_MAX_RETRY_COUNT = 2;
 
         // POST : api/auth
-        [Route("api/[action]")]
+        [Route("login")]
         [HttpPost]
         public async Task<ActionResult> Login([FromBody] IMAuth.Login input)
         {
@@ -132,7 +134,7 @@ namespace databasepmapilearn6.Controllers
             return Ok(response);
         }
 
-        [Route("api/[action]")]
+        [Route("[action]")]
         [HttpPost]
         [Authorize]
         public async Task<ActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input)
