@@ -28,6 +28,39 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
+        [HttpGet("[action]")]
+        public async Task<ActionResult> Dropdown([FromQuery] IMMenu.Dropdown input)
+        {
+            // check input is valid or not
+            // return bad request if it's invalid 
+            // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
+            // in other word this used to return badrequest response if it's invalid
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // check role user
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission");
+
+            // make query
+            var query = _context.MMenus.Where(m => !m.IsDeleted);
+
+            // search
+            if (!string.IsNullOrEmpty(input.Search)) query = query.Where(m => m.Name.ToLower().Contains(input.Search));
+
+            // get data menu
+            // cari tau cara bacanya
+            var menu = await query.Take(input.Show)
+                .Union(query.Where(m => input.AlreadyIds.Contains(m.ID)))
+                .OrderByDescending(m => m.ID)
+                .ToArrayAsync();
+
+            var vm = VMMenu.Dropdown.FromDb(menu);
+
+            return ResDropdown.Success(vm);
+        }
+
         // GET: api/Menu
         [HttpGet("getmenu")]
         public async Task<ActionResult<IEnumerable<MMenu>>> GetMMenus()
@@ -50,12 +83,10 @@ namespace databasepmapilearn6.Controllers
                 .Where(m => (m.RoleId == RoleId) && (!m.Menu.IsDeleted)).ToListAsync();
 
             if (RoleMenu == null) return Res.NotFound("menu");
-            // BadRequest("user role don't have menu");
 
-            var res = VMRoleMenu.Menu.FromDb(RoleMenu);
+            var vm = VMRoleMenu.Menu.FromDb(RoleMenu);
 
-            return Res.Success();
-            // return Ok(res);
+            return Res.Success(vm);
         }
     }
 }
