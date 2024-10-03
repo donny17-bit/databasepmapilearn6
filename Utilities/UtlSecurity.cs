@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace databasepmapilearn6.Utilities;
 
-public class UtlSecurity 
+public class UtlSecurity
 {
     public static string HashedPassword(string rawPassword)
     {
@@ -22,7 +22,7 @@ public class UtlSecurity
         // generate random password
         var rnd = new Random();
         var chars = new char[length];
-        for (int i=0; i<length; i++) 
+        for (int i = 0; i < length; i++)
         {
             chars[i] = CDefault.RandomCharRange[rnd.Next(0, length)];
         }
@@ -32,7 +32,7 @@ public class UtlSecurity
         // encrypt password
         string hashedPassword = HashedPassword(randomPassword);
 
-        return (randomPassword, hashedPassword); 
+        return (randomPassword, hashedPassword);
     }
 
     public static bool ValidatePassword(string hashedPassword, string rawPassword)
@@ -56,7 +56,7 @@ public class UtlSecurity
         //     random.GetBytes(salt);
         // }
 
-        return salt; 
+        return salt;
     }
 
     private static string Hash(string password, byte[] salt)
@@ -64,9 +64,9 @@ public class UtlSecurity
         // Hash reference : https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/consumer-apis/password-hashing?view=aspnetcore-8.0
         // hashing is one way encryption
         // to validate password use salt and inputed password and hash it to compare to hashed password
-        byte[] hashcode = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, 100000, 16);
+        byte[] hashcode = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, 10000, 16);
         string hashed = Convert.ToBase64String(hashcode);
-        
+
         return hashed;
     }
 }
