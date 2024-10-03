@@ -30,11 +30,15 @@ namespace databasepmapilearn6.Controllers
         // private const int CL_MAX_RETRY_COUNT = 2;
 
         // POST : api/auth
-        [Route("login")]
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] IMAuth.Login input)
         {
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
+
+            // var inputJson;
+
+            // var utlLogger = UtlLogger.Create(CDefault.Anonymous, $"{nameof(AuthenticationController)}/{nameof(Login)}", inputJson, false);
+
 
             // check input is valid or not
             // return bad request if it's invalid 
@@ -121,14 +125,6 @@ namespace databasepmapilearn6.Controllers
             {
                 return BadRequest($"Error on the Login AuthController API : {e}");
             }
-
-            // // create response object
-            // var response = new
-            // {
-            //     user.Email,
-            //     user.Username,
-            //     jwt = res
-            // };
 
             return Res.Success(res);
         }

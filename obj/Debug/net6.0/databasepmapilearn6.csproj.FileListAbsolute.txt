@@ -255,3 +255,15 @@ d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Authentic
 d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
 d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 d:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.DotNet.PlatformAbstractions.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.AspNetCore.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Extensions.Hosting.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Extensions.Logging.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Formatting.Compact.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Settings.Configuration.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.Async.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.Console.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.Debug.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.File.dll

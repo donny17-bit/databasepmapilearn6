@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using databasepmapilearn6.Configurations;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,14 @@ builder.Services.AddDbContext<DatabasePmContext>(options =>
     string connectionString = builder.Configuration.GetConnectionString("Databaseapilearn6");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
+
+// initialize log service 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+// Serilog configuration
+builder.Host.UseSerilog();
 
 // add JWT service
 // ntar cari tau cara bacanya
@@ -70,7 +79,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication(); // add this for using JWT
 app.UseAuthorization();
 app.UseCors("CorsPolicy"); // add CORS
-
 app.MapControllers();
 
 app.Run();
