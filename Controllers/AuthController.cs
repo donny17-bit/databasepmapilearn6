@@ -35,9 +35,9 @@ namespace databasepmapilearn6.Controllers
         {
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
-            // var inputJson;
+            var inputJson = UtlConverter.ObjectToJson(input);
 
-            // var utlLogger = UtlLogger.Create(CDefault.Anonymous, $"{nameof(AuthenticationController)}/{nameof(Login)}", inputJson, false);
+            var utlLogger = UtlLogger.Create(CDefault.Anonymous, $"{nameof(AuthenticationController)}/{nameof(Login)}", inputJson, false);
 
 
             // check input is valid or not
