@@ -29,10 +29,10 @@ public class VMRoleMenu
                 menu_Id = mRoleMenu.MenuId,
                 icon_id = mRoleMenu.Menu.IconId,
                 icon_name = mRoleMenu.Menu.Icon.Name,
-                parent_id = mRoleMenu.Menu.ParentId,
+                parent_id = mRoleMenu.Menu?.ParentId,
                 name = mRoleMenu.Menu.Name,
-                component = mRoleMenu.Menu.Component,
-                path = mRoleMenu.Menu.Path,
+                component = mRoleMenu.Menu?.Component,
+                path = mRoleMenu.Menu?.Path,
                 order = mRoleMenu.Menu.Order,
                 is_deleted = mRoleMenu.Menu.IsDeleted
             }).ToList();
