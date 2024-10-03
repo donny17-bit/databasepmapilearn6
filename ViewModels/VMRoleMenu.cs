@@ -16,6 +16,7 @@ public class VMRoleMenu
         public string? component { get; set; }
         public string? path { get; set; }
         public int order { get; set; }
+
         public bool is_deleted { get; set; }
 
         // this is use to change the return to be like the properties above
