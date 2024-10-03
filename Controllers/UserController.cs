@@ -10,7 +10,7 @@ using databasepmapilearn6.Utilities;
 using databasepmapilearn6.InputModels;
 using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.ViewModels;
-
+using databasepmapilearn6.Responses;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -68,11 +68,11 @@ namespace databasepmapilearn6.Controllers
                 .SingleOrDefaultAsync();
 
             // check if user null
-            if (user == null) return BadRequest("user not found on the database");
+            if (user == null) return Res.NotFound("user");
 
-            var res = VMUser.Detail.FromDb(user);
+            var vm = VMUser.Detail.FromDb(user);
 
-            return Ok(res);
+            return Res.Success(vm);
         }
 
         // GET: api/User/5

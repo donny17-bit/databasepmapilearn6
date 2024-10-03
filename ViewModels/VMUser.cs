@@ -6,27 +6,31 @@ public class VMUser
 {
     public class Detail : VM
     {
-        public int Id {get; set;}
-        public int RoleId {get; set;}
-        public int PositionId {get; set;}
-        public string Username {get; set;} = null!;
-        public string Name {get; set;} = null!;
-        public string Email {get; set;} = null!;
+        public int id { get; set; }
+        public int role_id { get; set; }
+        public string role_name { get; set; }
+        public int position_id { get; set; }
+        public string position_name { get; set; }
+        public string username { get; set; } = null!;
+        public string name { get; set; } = null!;
+        public string email { get; set; } = null!;
 
         private Detail(string CreatedBy, DateTime CreatedDate, string? UpdateBy, DateTime? UpdateDate, bool IsDeleted) : base(CreatedBy, CreatedDate, UpdateBy, UpdateDate, IsDeleted)
         {
         }
 
-        public static Detail FromDb(MUser user) 
+        public static Detail FromDb(MUser user)
         {
             return new Detail(user.CreatedBy.ToString(), user.CreatedDate, user.UpdatedBy.ToString(), user.UpdatedDate, user.IsDeleted)
             {
-                Id = user.Id,
-                RoleId = user.RoleId,
-                PositionId = user.PositionId,
-                Username = user.Username,
-                Name = user.Name,
-                Email = user.Email
+                id = user.Id,
+                role_id = user.RoleId,
+                role_name = user.Role.Name,
+                position_id = user.PositionId,
+                position_name = user.Position.Name,
+                username = user.Username,
+                name = user.Name,
+                email = user.Email
             };
         }
     }
