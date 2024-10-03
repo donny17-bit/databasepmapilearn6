@@ -118,8 +118,6 @@ namespace databasepmapilearn6.Controllers
             user.LockedUntil = null;
             user.RefreshToken = RefreshToken;
 
-            Console.WriteLine("hello world");
-
             try
             {
                 _context.MUser.Update(user);
@@ -133,7 +131,8 @@ namespace databasepmapilearn6.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest($"Error on the Login AuthController API : {e}");
+                // add failed request
+                Res.Failed(utlLogger, e);
             }
 
             return Res.Success(res);

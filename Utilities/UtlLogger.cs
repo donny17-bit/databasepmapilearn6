@@ -27,9 +27,42 @@ public class UtlLogger
         if (ShouldLogInitialized) Log.Information(CombinedMessage("initialized", AdditionalMessage));
     }
 
-    private string CombinedMessage(string processName, string additionalMessage) => $"{_username} -> {_logId} -> {_baseMessage} -> {processName}" + (!string.IsNullOrEmpty(additionalMessage) ? $" -> {additionalMessage}" : string.Empty);
+    private string CombinedMessage(string processName, string additionalMessage)
+    {
+        return $"{_username} -> {_logId} -> {_baseMessage} -> {processName}" + (!string.IsNullOrEmpty(additionalMessage) ? $" -> {additionalMessage}" : string.Empty);
+    }
 
-    public static UtlLogger Create(string Username, string BaseMessage, string AdditionalMessage = "", bool ShouldLogInitialized = true) => new UtlLogger(Username, BaseMessage, AdditionalMessage, ShouldLogInitialized);
+    public static UtlLogger Create(string Username, string BaseMessage, string AdditionalMessage = "", bool ShouldLogInitialized = true)
+    {
+        return new UtlLogger(Username, BaseMessage, AdditionalMessage, ShouldLogInitialized);
+    }
 
-    public void Success(string additionalMessage = "") => Log.Information(CombinedMessage("success", additionalMessage));
+    private string GetInnerExceptionRecursive(Exception e)
+    {
+        // get inner exception inside exception recursively
+        // and combine it 
+        if (e.InnerException != null) return $"{e.Message} - inner -> {GetInnerExceptionRecursive(e.InnerException)}";
+
+        // return it when there is no more inner exception
+        return e.Message;
+    }
+
+    // Success log
+    #region Success
+
+    public void Success(string additionalMessage = "")
+    {
+        Log.Information(CombinedMessage("success", additionalMessage));
+    }
+
+    #endregion
+
+    // failed log
+    #region Failed
+    public void Failed(Exception e, string ErrorCode)
+    {
+        Log.Error(CombinedMessage($"exception ({ErrorCode})", GetInnerExceptionRecursive(e)));
+    }
+
+    #endregion
 }

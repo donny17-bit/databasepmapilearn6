@@ -13,6 +13,8 @@ public static class UtlGenerator
 {
     public static string LogId() => RandomString(CDefault.LogIdLength);
 
+    public static string ErrorCode() => RandomString(CDefault.ErrorCodeLength, CDefault.ErrorCodeChar);
+
     public static string RandomString(int length, string allowedChars = CDefault.RandomCharRange)
     {
         Random random = new Random();

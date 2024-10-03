@@ -10,5 +10,10 @@ public static class CDefault
     // log id
     public const int LogIdLength = 16;
 
+    // logger
     public const string Anonymous = "?";
+
+    // error code
+    public const int ErrorCodeLength = 4;
+    public const string ErrorCodeChar = "0123456789";
 }
