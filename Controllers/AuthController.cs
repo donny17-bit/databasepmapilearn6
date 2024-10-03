@@ -33,23 +33,20 @@ namespace databasepmapilearn6.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] IMAuth.Login input)
         {
-            if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
-
             // convert input object to json
             var inputJson = UtlConverter.ObjectToJson(input);
 
             // for logger
             var utlLogger = UtlLogger.Create(CDefault.Anonymous, $"{nameof(AuthenticationController)}/{nameof(Login)}", inputJson, false);
 
+            // return nnti diganti jadi res.failed
+            if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
             // check input is valid or not
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if (!ModelState.IsValid) return BadRequest();
-
-            // konversi input ke json string
-            // ini belum
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
 
             // get data user from DB
             var user = await _context.MUser
@@ -64,10 +61,10 @@ namespace databasepmapilearn6.Controllers
             // .SingleOrDefaultAsync(m => m.Username == input.Username)
 
             // check user on the DB or not
-            if (user == null) return BadRequest("user is not on the DB");
+            if (user == null) return Res.Failed("Password or username not match", VMAuth.Login.WrongPassword());
 
             // check if user is locked or not
-            if (user.LockedUntil > DateTime.Now) return BadRequest("user is locked, please wait for a moment and try again later");
+            if (user.LockedUntil > DateTime.Now) return Res.Failed("user locked, please wait for a moment");
 
             // check password
             // password salah 
@@ -144,8 +141,7 @@ namespace databasepmapilearn6.Controllers
             return Res.Success(res);
         }
 
-        [Route("[action]")]
-        [HttpPost]
+        [HttpPost("[action]")]
         [Authorize]
         public async Task<ActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input)
         {

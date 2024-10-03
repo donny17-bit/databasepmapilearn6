@@ -1,6 +1,7 @@
 using databasepmapilearn6.Constans;
 using databasepmapilearn6.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using static databasepmapilearn6.ViewModels.VMAuth;
 
 namespace databasepmapilearn6.Responses;
@@ -11,8 +12,12 @@ public class Res
     public string version { get; }
     public string message { get; }
     public object payload { get; }
-    // constructor    
+
+    #region constructor    
     private Res(bool success, string message = null, object payload = null) { this.success = success; this.version = CVersion.APP; this.message = message; this.payload = payload; }
+
+    #endregion
+
 
     #region Success
 
@@ -24,6 +29,11 @@ public class Res
 
 
     #region Failed
+
+    public static IActionResult Failed(string message, object payload = null)
+    {
+        return new BadRequestObjectResult(new Res(false, message: message, payload: payload));
+    }
 
     public static IActionResult Failed(string message, Login vm)
     {
@@ -39,6 +49,11 @@ public class Res
         logger.Failed(e, errorCode);
 
         return new BadRequestObjectResult(new Res(false, message: $"error {errorCode}: {e.Message}"));
+    }
+
+    public static IActionResult Failed(ModelStateDictionary modelState)
+    {
+        return new BadRequestObjectResult(new Res(false, message: "Input not valid", payload: modelState.SelectMany(dic => dic.Value.Errors).Select(modelError => modelError.ErrorMessage)));
     }
     #endregion
 }
