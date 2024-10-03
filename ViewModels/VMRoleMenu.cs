@@ -6,34 +6,34 @@ public class VMRoleMenu
 {
     public class Menu
     {
-        public int Id { get; set; }
-        public int RoleId { get; set; }
-        public int MenuId { get; set; }
-        public int IconId { get; set; }
-        public string IconName { get; set; } = null!;
-        public int? ParentId { get; set; }
-        public string Name { get; set; } = null!;
-        public string? Component { get; set; }
-        public string? Path { get; set; }
-        public int Order { get; set; }
-        public bool IsDeleted { get; set; }
+        public int id { get; set; }
+        public int role_id { get; set; }
+        public int menu_Id { get; set; }
+        public int icon_id { get; set; }
+        public string icon_name { get; set; } = null!;
+        public int? parent_id { get; set; }
+        public string name { get; set; } = null!;
+        public string? component { get; set; }
+        public string? path { get; set; }
+        public int order { get; set; }
+        public bool is_deleted { get; set; }
 
         // this is use to change the return to be like the properties above
         public static List<Menu> FromDb(List<MRoleMenu> mRoleMenus)
         {
             return mRoleMenus.Select(mRoleMenu => new Menu
             {
-                Id = mRoleMenu.Id,
-                RoleId = mRoleMenu.RoleId,
-                MenuId = mRoleMenu.MenuId,
-                IconId = mRoleMenu.Menu.IconId,
-                IconName = mRoleMenu.Menu.Icon.Name,
-                ParentId = mRoleMenu.Menu.ParentId,
-                Name = mRoleMenu.Menu.Name,
-                Component = mRoleMenu.Menu.Component,
-                Path = mRoleMenu.Menu.Path,
-                Order = mRoleMenu.Menu.Order,
-                IsDeleted = mRoleMenu.Menu.IsDeleted
+                id = mRoleMenu.Id,
+                role_id = mRoleMenu.RoleId,
+                menu_Id = mRoleMenu.MenuId,
+                icon_id = mRoleMenu.Menu.IconId,
+                icon_name = mRoleMenu.Menu.Icon.Name,
+                parent_id = mRoleMenu.Menu.ParentId,
+                name = mRoleMenu.Menu.Name,
+                component = mRoleMenu.Menu.Component,
+                path = mRoleMenu.Menu.Path,
+                order = mRoleMenu.Menu.Order,
+                is_deleted = mRoleMenu.Menu.IsDeleted
             }).ToList();
         }
     }
