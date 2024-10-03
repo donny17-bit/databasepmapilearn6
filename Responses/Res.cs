@@ -20,6 +20,7 @@ public class Res
 
 
     #region Success
+    public static IActionResult Success() => new OkObjectResult(new Res(true));
 
     public static IActionResult Success(object payload)
     {
@@ -29,15 +30,14 @@ public class Res
 
 
     #region Failed
-
     public static IActionResult Failed(string message, object payload = null)
     {
         return new BadRequestObjectResult(new Res(false, message: message, payload: payload));
     }
 
-    public static IActionResult Failed(string message, Login vm)
+    public static IActionResult Failed(string message, Login vmLogin)
     {
-        return new BadRequestObjectResult(new Res(false, message: message, payload: vm));
+        return new BadRequestObjectResult(new Res(false, message: message, payload: vmLogin));
     }
 
     public static IActionResult Failed(UtlLogger logger, Exception e)
@@ -55,5 +55,11 @@ public class Res
     {
         return new BadRequestObjectResult(new Res(false, message: "Input not valid", payload: modelState.SelectMany(dic => dic.Value.Errors).Select(modelError => modelError.ErrorMessage)));
     }
+    #endregion
+
+
+    #region not found
+    public static IActionResult NotFound(string notFound) => new BadRequestObjectResult(new Res(false, message: $"{notFound} not found"));
+
     #endregion
 }

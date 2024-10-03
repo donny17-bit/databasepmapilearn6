@@ -143,15 +143,22 @@ namespace databasepmapilearn6.Controllers
 
         [HttpPost("[action]")]
         [Authorize]
-        public async Task<ActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input)
+        public async Task<IActionResult> ChangePassword([FromBody] IMAuth.ChangePassword input)
         {
+            // convert input object to json
+            var inputJson = UtlConverter.ObjectToJson(input);
+
+            // for logger
+            var utlLogger = UtlLogger.Create(User.Identity.Name, $"{nameof(AuthenticationController)}/{nameof(ChangePassword)}", inputJson);
+
+            // check connection of database
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
             // check input is valid or not
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
 
             // ambil claim from user
             // cari tau User itu dari mana
@@ -160,16 +167,15 @@ namespace databasepmapilearn6.Controllers
 
             // get password from DB using id
             var user = await _context.MUser.Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted)).SingleOrDefaultAsync();
-            if (user == null) return Problem("user on changePassword AuthController is null");
+            if (user == null) return Res.NotFound("user not found");
 
             // validate old password
             bool validate = UtlSecurity.ValidatePassword(user.Password, input.OldPassword);
 
             // old password wrong
-            if (!validate)
-            {
-                return BadRequest("Old Password is incorrect");
-            }
+            // coba nnti diganti
+            if (!validate) return Res.Failed("Old password is incorrect");
+
 
             // old password correct
             string hashedNewPassword = UtlSecurity.HashedPassword(input.NewPassword);
@@ -185,20 +191,17 @@ namespace databasepmapilearn6.Controllers
 
                 // commit
                 await _context.SaveChangesAsync();
+
+                // log
+                utlLogger.Success();
             }
             catch (System.Exception e)
             {
-                return BadRequest($"Error on the ChangePassword AuthPassword API : {e}");
+                return Res.Failed(utlLogger, e);
+                // BadRequest($"Error on the ChangePassword AuthPassword API : {e}");
             }
 
-            var response = new
-            {
-                user.Email,
-                user.Username,
-                Message = "change password success"
-            };
-
-            return Ok(response);
+            return Res.Success();
         }
     }
 }
