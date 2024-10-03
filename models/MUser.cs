@@ -43,5 +43,12 @@ public class MUser
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
 
+
+    #region Virtual
+    // virtual variable
+
     public virtual MRole Role { get; set; } = null!;
+    public virtual MPosition Position { get; set; } = null!;
+
+    #endregion
 }

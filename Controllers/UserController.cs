@@ -27,19 +27,45 @@ namespace databasepmapilearn6.Controllers
         }
 
         // GET: api/User
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MUser>>> GetMUser()
+        [HttpGet("[action]")]
+        public async Task<ActionResult<IEnumerable<MUser>>> GetUserInfo()
         {
             if (_context.MUser == null)
             {
-                return NotFound();
+                // change it later
+                return Problem("MUser not found on the user contoller");
             }
 
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
             // get user from db
-            var user = await _context.MUser.Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+            var user = await _context.MUser
+                .Where(m => (m.Id == iClaim.Id) && (!m.IsDeleted))
+                .Select(m => new MUser
+                {
+                    Id = m.Id,
+                    RoleId = m.RoleId,
+                    PositionId = m.PositionId,
+                    Username = m.Username,
+                    Name = m.Name,
+                    Email = m.Email,
+                    CreatedBy = m.CreatedBy,
+                    CreatedDate = m.CreatedDate,
+                    UpdatedBy = m.UpdatedBy,
+                    UpdatedDate = m.UpdatedDate,
+                    Role = new MRole
+                    {
+                        Id = m.Role.Id,
+                        Name = m.Role.Name
+                    },
+                    Position = new MPosition
+                    {
+                        Id = m.Position.Id,
+                        Name = m.Position.Name
+                    }
+                })
+                .SingleOrDefaultAsync();
 
             // check if user null
             if (user == null) return BadRequest("user not found on the database");
