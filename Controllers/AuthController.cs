@@ -170,7 +170,7 @@ namespace databasepmapilearn6.Controllers
             if (user == null) return Res.NotFound("user not found");
 
             // validate old password
-            bool validate = UtlSecurity.ValidatePassword(user.Password, input.OldPassword);
+            bool validate = UtlSecurity.ValidatePassword(user.Password, input.old_pass);
 
             // old password wrong
             // coba nnti diganti
@@ -178,7 +178,7 @@ namespace databasepmapilearn6.Controllers
 
 
             // old password correct
-            string hashedNewPassword = UtlSecurity.HashedPassword(input.NewPassword);
+            string hashedNewPassword = UtlSecurity.HashedPassword(input.new_pass);
 
             user.Password = hashedNewPassword;
             user.UpdatedBy = iClaim.Id;

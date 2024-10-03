@@ -17,9 +17,9 @@ public class IMAuth
     public class ChangePassword
     {
         [Required]
-        public string OldPassword { get; set; } = null!;
+        public string old_pass { get; set; } = null!;
 
         [Required]
-        public string NewPassword { get; set; } = null!;
+        public string new_pass { get; set; } = null!;
     }
 }

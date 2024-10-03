@@ -8,7 +8,7 @@ public class VMRoleMenu
     {
         public int id { get; set; }
         public int role_id { get; set; }
-        public int menu_Id { get; set; }
+        public int menu_id { get; set; }
         public int icon_id { get; set; }
         public string icon_name { get; set; } = null!;
         public int? parent_id { get; set; }
@@ -26,7 +26,7 @@ public class VMRoleMenu
             {
                 id = mRoleMenu.Id,
                 role_id = mRoleMenu.RoleId,
-                menu_Id = mRoleMenu.MenuId,
+                menu_id = mRoleMenu.MenuId,
                 icon_id = mRoleMenu.Menu.IconId,
                 icon_name = mRoleMenu.Menu.Icon.Name,
                 parent_id = mRoleMenu.Menu?.ParentId,
