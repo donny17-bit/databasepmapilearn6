@@ -64,7 +64,8 @@ public class UtlSecurity
         // Hash reference : https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/consumer-apis/password-hashing?view=aspnetcore-8.0
         // hashing is one way encryption
         // to validate password use salt and inputed password and hash it to compare to hashed password
-        byte[] hashcode = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, 10000, 16);
+        // byte[] hashcode = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, 10000, 16); // nnti diganti ini
+        byte[] hashcode = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, 100000, 16);
         string hashed = Convert.ToBase64String(hashcode);
 
         return hashed;

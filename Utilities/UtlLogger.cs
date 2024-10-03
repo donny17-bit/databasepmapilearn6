@@ -27,14 +27,9 @@ public class UtlLogger
         if (ShouldLogInitialized) Log.Information(CombinedMessage("initialized", AdditionalMessage));
     }
 
-    private string CombinedMessage(string processName, string additionalMessage)
-    {
-        return $"{_username} -> {_logId} -> {_baseMessage} -> {processName}" + (!string.IsNullOrEmpty(additionalMessage) ? $" -> {additionalMessage}" : string.Empty);
-    }
+    private string CombinedMessage(string processName, string additionalMessage) => $"{_username} -> {_logId} -> {_baseMessage} -> {processName}" + (!string.IsNullOrEmpty(additionalMessage) ? $" -> {additionalMessage}" : string.Empty);
 
-    public static UtlLogger Create(string Username, string BaseMessage, string AdditionalMessage = "", bool ShouldLogInitialized = true
-    )
-    {
-        return new UtlLogger(Username, BaseMessage, AdditionalMessage, ShouldLogInitialized);
-    }
+    public static UtlLogger Create(string Username, string BaseMessage, string AdditionalMessage = "", bool ShouldLogInitialized = true) => new UtlLogger(Username, BaseMessage, AdditionalMessage, ShouldLogInitialized);
+
+    public void Success(string additionalMessage = "") => Log.Information(CombinedMessage("success", additionalMessage));
 }

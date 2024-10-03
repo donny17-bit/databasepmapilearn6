@@ -1,0 +1,1 @@
+don't forget add Serilog object in the appsetting.json to add logger in the app

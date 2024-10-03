@@ -35,8 +35,10 @@ namespace databasepmapilearn6.Controllers
         {
             if (_context.MUser == null) return Problem("context MUser is null on Login AuthContoller");
 
+            // convert input object to json
             var inputJson = UtlConverter.ObjectToJson(input);
 
+            // for logger
             var utlLogger = UtlLogger.Create(CDefault.Anonymous, $"{nameof(AuthenticationController)}/{nameof(Login)}", inputJson, false);
 
 
@@ -116,10 +118,18 @@ namespace databasepmapilearn6.Controllers
             user.LockedUntil = null;
             user.RefreshToken = RefreshToken;
 
+            Console.WriteLine("hello world");
+
             try
             {
                 _context.MUser.Update(user);
                 await _context.SaveChangesAsync();
+
+                if (input.Username == null) return BadRequest();
+
+                // log
+                // to show log in the debug console
+                utlLogger.Success(input.Username);
             }
             catch (Exception e)
             {

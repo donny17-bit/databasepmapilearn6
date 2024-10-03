@@ -80,5 +80,6 @@ app.UseAuthentication(); // add this for using JWT
 app.UseAuthorization();
 app.UseCors("CorsPolicy"); // add CORS
 app.MapControllers();
+// app.UseRouting();
 
 app.Run();
