@@ -57,8 +57,6 @@ namespace databasepmapilearn6.Controllers
             // nnti dibikin catatan dokumentasi perbedaan pake where atau ngga nya
             // .SingleOrDefaultAsync(m => m.Username == input.Username)
 
-            Console.WriteLine($"user value : {user}");
-
             // check user on the DB or not
             if (user == null) return BadRequest("user is not on the DB");
 
@@ -106,7 +104,7 @@ namespace databasepmapilearn6.Controllers
             // create jwt token
             string Jwt = UtlGenerator.Jwt(_confJwt, claim, 60);
 
-            // save refersh token and access token to model auth
+            // save refresh token and access token to model auth
             var res = VMAuth.Login.Success(Jwt, RefreshToken);
 
             // update data user
