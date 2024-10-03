@@ -20,9 +20,9 @@ public class Res
 
 
     #region Success
-    public static IActionResult Success() => new OkObjectResult(new Res(true));
+    public static ActionResult Success() => new OkObjectResult(new Res(true));
 
-    public static IActionResult Success(object payload)
+    public static ActionResult Success(object payload)
     {
         return new OkObjectResult(new Res(true, payload: payload));
     }
@@ -30,17 +30,17 @@ public class Res
 
 
     #region Failed
-    public static IActionResult Failed(string message, object payload = null)
+    public static ActionResult Failed(string message, object payload = null)
     {
         return new BadRequestObjectResult(new Res(false, message: message, payload: payload));
     }
 
-    public static IActionResult Failed(string message, Login vmLogin)
+    public static ActionResult Failed(string message, Login vmLogin)
     {
         return new BadRequestObjectResult(new Res(false, message: message, payload: vmLogin));
     }
 
-    public static IActionResult Failed(UtlLogger logger, Exception e)
+    public static ActionResult Failed(UtlLogger logger, Exception e)
     {
         // generate error code 
         string errorCode = UtlGenerator.ErrorCode();
@@ -51,7 +51,7 @@ public class Res
         return new BadRequestObjectResult(new Res(false, message: $"error {errorCode}: {e.Message}"));
     }
 
-    public static IActionResult Failed(ModelStateDictionary modelState)
+    public static ActionResult Failed(ModelStateDictionary modelState)
     {
         return new BadRequestObjectResult(new Res(false, message: "Input not valid", payload: modelState.SelectMany(dic => dic.Value.Errors).Select(modelError => modelError.ErrorMessage)));
     }
@@ -59,7 +59,7 @@ public class Res
 
 
     #region not found
-    public static IActionResult NotFound(string notFound) => new BadRequestObjectResult(new Res(false, message: $"{notFound} not found"));
+    public static ActionResult NotFound(string notFound) => new BadRequestObjectResult(new Res(false, message: $"{notFound} not found"));
 
     #endregion
 }

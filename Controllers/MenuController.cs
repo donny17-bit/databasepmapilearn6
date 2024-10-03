@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.InputModels;
 using databasepmapilearn6.ViewModels;
+using databasepmapilearn6.Responses;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -28,12 +29,13 @@ namespace databasepmapilearn6.Controllers
         }
 
         // GET: api/Menu
-        [HttpGet]
+        [HttpGet("getmenu")]
         public async Task<ActionResult<IEnumerable<MMenu>>> GetMMenus()
         {
             if (_context.MRoleMenu == null)
             {
-                return NotFound("MRoleMenu not found on the menu contoller");
+                // change it later
+                return Problem("MRoleMenu not found on the menu contoller");
             }
 
             // get role id from claim
@@ -47,11 +49,13 @@ namespace databasepmapilearn6.Controllers
                 .ThenInclude(m => m.Icon)
                 .Where(m => (m.RoleId == RoleId) && (!m.Menu.IsDeleted)).ToListAsync();
 
-            if (RoleMenu == null) return BadRequest("user role don't have menu");
+            if (RoleMenu == null) return Res.NotFound("menu");
+            // BadRequest("user role don't have menu");
 
             var res = VMRoleMenu.Menu.FromDb(RoleMenu);
 
-            return Ok(res);
+            return Res.Success();
+            // return Ok(res);
         }
     }
 }

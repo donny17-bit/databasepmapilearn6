@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("databasepmapilearn6")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0a65a0a0abfbb49680d2055eb6400ad04e49ed33")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a53cec1bb5961b226d94c9698a75617a6290725f")]
 [assembly: System.Reflection.AssemblyProductAttribute("databasepmapilearn6")]
 [assembly: System.Reflection.AssemblyTitleAttribute("databasepmapilearn6")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
