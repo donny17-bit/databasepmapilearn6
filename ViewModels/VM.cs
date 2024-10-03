@@ -2,11 +2,11 @@ namespace databasepmapilearn6.ViewModels;
 
 public abstract class VM
 {
-    public string CreatedBy { get; set; } = null!;
-    public DateTime CreatedDate { get; set; }
-    public string? UpdatedBy { get; set; }
-    public DateTime? UpdatedDate { get; set; }
-    public bool IsDeleted { get; set; }
+    public string created_by { get; set; } = null!;
+    public DateTime created_date { get; set; }
+    public string? updated_by { get; set; }
+    public DateTime? updated_date { get; set; }
+    public bool is_deleted { get; set; }
 
     protected VM(
         string CreatedBy,
@@ -16,10 +16,10 @@ public abstract class VM
         bool IsDeleted
     )
     {
-        this.CreatedBy = CreatedBy;
-        this.CreatedDate = CreatedDate;
-        this.UpdatedBy = UpdatedBy;
-        this.UpdatedDate = UpdatedDate;
-        this.IsDeleted = IsDeleted;
+        this.created_by = CreatedBy;
+        this.created_date = CreatedDate;
+        this.updated_by = UpdatedBy;
+        this.updated_date = UpdatedDate;
+        this.is_deleted = IsDeleted;
     }
 }
