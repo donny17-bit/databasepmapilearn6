@@ -64,5 +64,10 @@ public class UtlLogger
         Log.Error(CombinedMessage($"exception ({ErrorCode})", GetInnerExceptionRecursive(e)));
     }
 
+    public void Failed(string message)
+    {
+        Log.Warning(CombinedMessage("failed", message));
+    }
+
     #endregion
 }

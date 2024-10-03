@@ -1,6 +1,7 @@
 using databasepmapilearn6.Constans;
 using databasepmapilearn6.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using static databasepmapilearn6.ViewModels.VMAuth;
 
 namespace databasepmapilearn6.Responses;
 
@@ -13,10 +14,20 @@ public class Res
     // constructor    
     private Res(bool success, string message = null, object payload = null) { this.success = success; this.version = CVersion.APP; this.message = message; this.payload = payload; }
 
+    #region Success
 
     public static IActionResult Success(object payload)
     {
         return new OkObjectResult(new Res(true, payload: payload));
+    }
+    #endregion
+
+
+    #region Failed
+
+    public static IActionResult Failed(string message, Login vm)
+    {
+        return new BadRequestObjectResult(new Res(false, message: message, payload: vm));
     }
 
     public static IActionResult Failed(UtlLogger logger, Exception e)
@@ -29,4 +40,5 @@ public class Res
 
         return new BadRequestObjectResult(new Res(false, message: $"error {errorCode}: {e.Message}"));
     }
+    #endregion
 }

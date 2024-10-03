@@ -20,5 +20,11 @@ public class VMAuth
                 refresh_token = RefreshToken
             };
         }
+
+        public static Login WrongPassword() => new Login
+        {
+            is_wrong_password = true,
+            error_message = "username or password is wrong"
+        };
     }
 }

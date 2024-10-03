@@ -80,23 +80,29 @@ namespace databasepmapilearn6.Controllers
                 if (user.RetryCount > 2)
                 {
                     // if (user.RetryCount > CL_MAX_RETRY_COUNT) {
-
                     user.LockedUntil = DateTime.Now.AddMinutes(5);
                 }
 
                 // update data user on DB
                 try
                 {
-                    // _context.Entry(user).State = EntityState.Modified;
+                    // update
                     _context.MUser.Update(user);
+
+                    // commit
                     await _context.SaveChangesAsync();
+
+                    // log
+                    utlLogger.Failed(inputJson);
                 }
                 catch (Exception e)
                 {
-                    BadRequest($"Error on the Login Wrong password API : {e}");
+                    Res.Failed(utlLogger, e);
                 }
 
-                return BadRequest("Password not match");
+                var resWrongPass = VMAuth.Login.WrongPassword();
+
+                return Res.Failed("Password or username not match", resWrongPass);
             }
 
             // password benar //
