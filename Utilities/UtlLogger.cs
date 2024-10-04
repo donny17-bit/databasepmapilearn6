@@ -87,13 +87,20 @@ public class UtlLogger
 
     #endregion
 
-    // failed log
+
     #region Failed
+
+    // Log failed operation because of catched exception (withour error code).
+    // Mainly used when logging from a non-controller method.
+    public void Failed(Exception e) => Log.Error(CombinedMessage("exception", GetInnerExceptionRecursive(e)));
+
+    // Log failed operation because of catched exception.
     public void Failed(Exception e, string ErrorCode)
     {
         Log.Error(CombinedMessage($"exception ({ErrorCode})", GetInnerExceptionRecursive(e)));
     }
 
+    // Log failed operation.
     public void Failed(string message)
     {
         Log.Warning(CombinedMessage("failed", message));

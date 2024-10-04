@@ -7,6 +7,7 @@ using databasepmapilearn6.Configurations;
 using Serilog;
 using databasepmapilearn6.Constans;
 using databasepmapilearn6.Domains.Utilities;
+using databasepmapilearn6.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,9 @@ var jwtAudiance = builder.Configuration.GetSection(CConfigurationString.JWT_AUD)
 builder.Services.Configure<ConfEmail>(builder.Configuration.GetSection(CConfigurationString.Email)); // configure ConfEmail to the main program 
 builder.Services.Configure<ConfJwt>(builder.Configuration.GetSection(CConfigurationString.JWT)); // configure ConfJwt to the main program
 
-// builder.Services.AddSingleton<IUtlEmail, UtlEmail>();
+// Add email service
+builder.Services.AddSingleton<IUtlEmail, UtlEmail>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
