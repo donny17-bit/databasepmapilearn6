@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.ViewModels;
 using databasepmapilearn6.Responses;
 using static databasepmapilearn6.Utilities.UtlEmail;
+using databasepmapilearn6.ExtensionMethods;
+using databasepmapilearn6.Domains.Utilities;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -22,9 +24,12 @@ namespace databasepmapilearn6.Controllers
     {
         private readonly DatabasePmContext _context;
 
-        public UserController(DatabasePmContext context)
+        private readonly IUtlEmail _utlEmail;
+
+        public UserController(DatabasePmContext context, IUtlEmail utlEmail)
         {
             _context = context;
+            _utlEmail = utlEmail;
         }
 
         // GET: api/User
@@ -216,14 +221,24 @@ namespace databasepmapilearn6.Controllers
             var imEmailMessage = new List<IMEmail.Message>();
             var imEmailAddressList = new List<IMEmail.Address> { IMEmail.Address.FromHardCode(input.Name, input.Email) };
 
-            // imEmailMessage.Add(
-            //     IMEmail.Message.Create(
-            //         imEmailAddressList,
-            //         $"Pembuatan Akun {input.Username}"
-            //         // new UtlEmailContentBuilder().Text("asdad").Build
+            imEmailMessage.Add(
+                IMEmail.Message.Create(
+                    imEmailAddressList,
+                    $"Pembuatan Akun {input.Username}",
+                    new UtlEmailContentBuilder()
+                        .Text($"kepada user {input.Name}")
+                        .Enter(2)
+                        .Text("Berikut adalah password untuk melakukan login : ")
+                        .List(m => m
+                            .ListItem(n => n.Text("Password : ").Text(rawPassword, isBold: true))
+                        )
+                        .Enter(2)
+                        .Text("Dimohon untuk segera merubah password")
+                        .Enter()
+                        .Build()
 
-            //     )
-            // );
+                )
+            );
 
             var user = new MUser
             {
@@ -239,27 +254,24 @@ namespace databasepmapilearn6.Controllers
                 IsDeleted = false
             };
 
-            var res = new
-            {
-                roleId = input.RoleId,
-                positionId = input.PositionId,
-                username = input.Username,
-                name = input.Name,
-                email = input.Email,
-                password = rawPassword
-            };
 
             try
             {
                 await _context.MUser.AddAsync(user);
                 await _context.SaveChangesAsync();
 
-                // when success return success code and send user information
-                return Created("/api/user", res);
+                // send email
+                _utlEmail.Send(logger, imEmailMessage);
+
+                // log success
+                logger.Success();
+
+                // when success return success code
+                return Res.Success();
             }
-            catch
+            catch (Exception e)
             {
-                return BadRequest("Error on the API"); // change the error response later
+                return Res.Failed(logger, e);
             }
         }
 

@@ -1,3 +1,4 @@
+using MimeKit;
 using static databasepmapilearn6.Utilities.UtlEmail;
 
 namespace databasepmapilearn6.ExtensionMethods;
@@ -76,4 +77,28 @@ public static class ExtUtlEmailContentBuilder
 
         return input;
     }
+
+
+    // Builder
+    // Convert the inputted contents and attachment to be sent by email service
+    #region Helper
+    public static BodyBuilder Build(this UtlEmailContentBuilder input)
+    {
+        // initialize body builder
+        BodyBuilder bodyBuilder = new BodyBuilder();
+
+        // cari tau cara kerja ini gimana
+        // create HTML body
+        bodyBuilder.HtmlBody = string.Format($@"{input.stringBuilder.ToString()}");
+
+        // create attachment
+        foreach (string attachment in input.attachments)
+        {
+            bodyBuilder.Attachments.Add(attachment);
+        }
+
+        return bodyBuilder;
+    }
+
+    #endregion
 }
