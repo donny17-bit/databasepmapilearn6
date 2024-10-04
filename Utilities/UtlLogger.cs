@@ -9,8 +9,17 @@ public class UtlLogger
     private readonly string _baseMessage;
     private readonly string _logId;
 
+    // coba nanti getternya dihapus dan langsung ambil aja valuenya apa yg terjadi 
+    // getter
+    #region Getter
+
+    public string GetUsername() => this._username;
+    public string GetLogId() => this._logId;
+
+    #endregion
+
     // contructor
-    // UtlLogger additionalMessage is string 
+    // UtlLogger for username is string 
     private UtlLogger(string Username, string BaseMessage, string AdditionalMessage, bool ShouldLogInitialized)
     {
         // make sure all parameter is provided
@@ -27,25 +36,46 @@ public class UtlLogger
         if (ShouldLogInitialized) Log.Information(CombinedMessage("initialized", AdditionalMessage));
     }
 
-    private string CombinedMessage(string processName, string additionalMessage)
+    // UtlLogger for logger is UtlLogger 
+    // this is use to Create child instance from existing (parent) instance
+    private UtlLogger(
+        UtlLogger logger,
+        string NewBaseMassage,
+        string AdditionalMessage,
+        bool ShouldLogInitialized
+    )
     {
-        return $"{_username} -> {_logId} -> {_baseMessage} -> {processName}" + (!string.IsNullOrEmpty(additionalMessage) ? $" -> {additionalMessage}" : string.Empty);
+        // same username & log id
+        this._username = logger.GetUsername();
+        this._logId = logger.GetLogId();
+
+        // update base message
+        this._baseMessage = NewBaseMassage;
+
+        if (ShouldLogInitialized) Log.Information(CombinedMessage("initilized (child)", AdditionalMessage));
     }
 
+
+    #region Factories
+
+    // create logger object
     public static UtlLogger Create(string Username, string BaseMessage, string AdditionalMessage = "", bool ShouldLogInitialized = true)
     {
         return new UtlLogger(Username, BaseMessage, AdditionalMessage, ShouldLogInitialized);
     }
 
-    private string GetInnerExceptionRecursive(Exception e)
+    #region  don't know what is this !!!!! 
+    #endregion
+    // Create a new instance of this class using an existing instance with different base message but same log id.
+    // This is useful when you want to do logging in classes other than the instance's source e.g. calling <see cref="UtlFile"/> method from a controller.
+    // The created instance's <see cref="_username"/> and <see cref="_logId"/> will be the same.
+    public static UtlLogger FromExisting(UtlLogger logger, string newBaseMassage, string AdditionalMessage = "", bool ShouldLogInitialized = true)
     {
-        // get inner exception inside exception recursively
-        // and combine it 
-        if (e.InnerException != null) return $"{e.Message} - inner -> {GetInnerExceptionRecursive(e.InnerException)}";
-
-        // return it when there is no more inner exception
-        return e.Message;
+        return new UtlLogger(logger, newBaseMassage, AdditionalMessage, ShouldLogInitialized);
     }
+
+    #endregion
+
 
     // Success log
     #region Success
@@ -70,4 +100,31 @@ public class UtlLogger
     }
 
     #endregion
+
+
+    // helpers
+    #region Helpers
+
+    // displayed log in the console
+    // Success format   : [username] -> "[log id] -> [base message] -> [process name] -> [additional message]"
+    // Exception format : "[username] -> [log id] -> [base message] -> [process name] -> [exception message] -> inner -> [inner exception message] -> inner -> [...]" (will print all inner exceptions recursively)
+
+    private string CombinedMessage(string processName, string additionalMessage)
+    {
+        return $"{_username} -> {_logId} -> {_baseMessage} -> {processName}" + (!string.IsNullOrEmpty(additionalMessage) ? $" -> {additionalMessage}" : string.Empty);
+    }
+
+    // get all inner exception
+    private string GetInnerExceptionRecursive(Exception e)
+    {
+        // get inner exception inside exception recursively
+        // and combine it 
+        if (e.InnerException != null) return $"{e.Message} - inner -> {GetInnerExceptionRecursive(e.InnerException)}";
+
+        // return it when there is no more inner exception
+        return e.Message;
+    }
+
+    #endregion
+
 }
