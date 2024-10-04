@@ -11,6 +11,7 @@ using databasepmapilearn6.InputModels;
 using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.ViewModels;
 using databasepmapilearn6.Responses;
+using static databasepmapilearn6.Utilities.UtlEmail;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -183,30 +184,54 @@ namespace databasepmapilearn6.Controllers
         }
 
         // POST: api/User/Create
-        [HttpPost("[action]")]
-        public async Task<ActionResult<MUser>> CreateUser([FromBody] IMUser.Create mUser)
+        [HttpPost]
+        public async Task<ActionResult<MUser>> Create([FromBody] IMUser.Create input)
         {
             if (_context.MUser == null)
             {
                 return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
 
+            // validate input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(UserController)}/{nameof(Create)}", UtlConverter.ObjectToJson(input));
 
             // validasi cek role user sebelum create akun user
             // User object auto generate from system security
             var iClaim = IMClaim.FromUserClaim(User.Claims);
             if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("user don't have permission to create user");
 
+            // check username sudah pernah ada belum di DB
+            // get user from DB
+            var mUser = await _context.MUser.Where(m => (m.Username == input.Username) && (!m.IsDeleted)).SingleOrDefaultAsync();
+            if (mUser != null) return Res.Failed("Username sudah ada di database");
+
             // generate random password
-            var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
+            var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(8);
+
+            // inisialisasi email
+            // cari tau cara bacanya
+            var imEmailMessage = new List<IMEmail.Message>();
+            var imEmailAddressList = new List<IMEmail.Address> { IMEmail.Address.FromHardCode(input.Name, input.Email) };
+
+            // imEmailMessage.Add(
+            //     IMEmail.Message.Create(
+            //         imEmailAddressList,
+            //         $"Pembuatan Akun {input.Username}"
+            //         // new UtlEmailContentBuilder().Text("asdad").Build
+
+            //     )
+            // );
 
             var user = new MUser
             {
-                RoleId = mUser.RoleId,
-                PositionId = mUser.PositionId,
-                Username = mUser.Username,
-                Name = mUser.Name,
-                Email = mUser.Email,
+                RoleId = input.RoleId,
+                PositionId = input.PositionId,
+                Username = input.Username,
+                Name = input.Name,
+                Email = input.Email,
                 Password = hashedPassword,
                 RetryCount = 0,
                 CreatedBy = iClaim.Id,
@@ -216,11 +241,11 @@ namespace databasepmapilearn6.Controllers
 
             var res = new
             {
-                roleId = mUser.RoleId,
-                positionId = mUser.PositionId,
-                username = mUser.Username,
-                name = mUser.Name,
-                email = mUser.Email,
+                roleId = input.RoleId,
+                positionId = input.PositionId,
+                username = input.Username,
+                name = input.Name,
+                email = input.Email,
                 password = rawPassword
             };
 

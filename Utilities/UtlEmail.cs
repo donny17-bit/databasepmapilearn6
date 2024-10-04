@@ -121,6 +121,7 @@ public class UtlEmail : IUtlEmail
 
         public UtlEmailContentBuilder() { }
 
+        // ~ untuk apa ?
         ~UtlEmailContentBuilder()
         {
             stringBuilder = null;
