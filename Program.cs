@@ -5,16 +5,21 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using databasepmapilearn6.Configurations;
 using Serilog;
+using databasepmapilearn6.Constans;
+using databasepmapilearn6.Domains.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // add jwt env
-var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
-var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-var jwtAudiance = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
+var jwtKey = builder.Configuration.GetSection(CConfigurationString.JWT_KEY).Get<string>();
+var jwtIssuer = builder.Configuration.GetSection(CConfigurationString.JWT_ISS).Get<string>();
+var jwtAudiance = builder.Configuration.GetSection(CConfigurationString.JWT_AUD).Get<string>();
 
 // Add services to the container.
-builder.Services.Configure<ConfJwt>(builder.Configuration.GetSection("Jwt")); // configure ConfJwt to the main program (valuenya belum disimpan di class constan)
+builder.Services.Configure<ConfEmail>(builder.Configuration.GetSection(CConfigurationString.Email)); // configure ConfEmail to the main program 
+builder.Services.Configure<ConfJwt>(builder.Configuration.GetSection(CConfigurationString.JWT)); // configure ConfJwt to the main program
+
+// builder.Services.AddSingleton<IUtlEmail, UtlEmail>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
