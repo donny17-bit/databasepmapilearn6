@@ -267,3 +267,6 @@ D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.Async.dll
 D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.Console.dll
 D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.Debug.dll
 D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\Serilog.Sinks.File.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\MailKit.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\MimeKit.dll
+D:\Code\.net\databasepmapilearn6\bin\Debug\net6.0\BouncyCastle.Crypto.dll
