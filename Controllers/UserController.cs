@@ -14,6 +14,7 @@ using databasepmapilearn6.Responses;
 using static databasepmapilearn6.Utilities.UtlEmail;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.Domains.Utilities;
+using static databasepmapilearn6.ExtensionMethods.ExtIQueryable;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -26,11 +27,17 @@ namespace databasepmapilearn6.Controllers
 
         private readonly IUtlEmail _utlEmail;
 
+        private readonly List<ColumnMapping> TABLE_COLUMN_MAPPING = new List<ColumnMapping>()
+        {
+            // ColumnMapping.Create(nameof(VMUser))
+        };
+
         public UserController(DatabasePmContext context, IUtlEmail utlEmail)
         {
             _context = context;
             _utlEmail = utlEmail;
         }
+
 
         [HttpGet("[action]")]
         public async Task<ActionResult<MUser>> Table([FromQuery] IMUser.Table input)
@@ -56,7 +63,7 @@ namespace databasepmapilearn6.Controllers
             // search 
             if (input.Search.Count > 0)
             {
-                // query = query.DynamicSearch()
+                query = query.DynamicSearch(input.Search, TABLE_COLUMN_MAPPING);
             }
 
             return Res.Success();

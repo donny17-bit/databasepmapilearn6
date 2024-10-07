@@ -4,6 +4,35 @@ namespace databasepmapilearn6.ViewModels;
 
 public class VMUser
 {
+    public class Table
+    {
+        public int id { get; set; }
+        public string username { get; set; }
+        public string name { get; set; }
+        public string email { get; set; }
+        public string position_code { get; set; }
+        public string position_name { get; set; }
+        public int role_id { get; set; }
+        public string role_name { get; set; }
+
+        // constructor
+        private Table() { }
+
+        public static Table[] FromDb(MUser[] users)
+        {
+            return users.Select(m => new Table
+            {
+                id = m.Id,
+                username = m.Username,
+                name = m.Name,
+                email = m.Email,
+                position_code = m.Position.Code,
+                role_id = m.RoleId,
+                role_name = m.Role.Name,
+            }).ToArray();
+        }
+    }
+
     public class Detail : VM
     {
         public int id { get; set; }
