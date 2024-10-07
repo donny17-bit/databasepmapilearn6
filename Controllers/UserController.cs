@@ -15,6 +15,7 @@ using static databasepmapilearn6.Utilities.UtlEmail;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.Domains.Utilities;
 using static databasepmapilearn6.ExtensionMethods.ExtIQueryable;
+using databasepmapilearn6.Enumerations;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -29,7 +30,12 @@ namespace databasepmapilearn6.Controllers
 
         private readonly List<ColumnMapping> TABLE_COLUMN_MAPPING = new List<ColumnMapping>()
         {
-            // ColumnMapping.Create(nameof(VMUser))
+            ColumnMapping.Create(nameof(VMUser.Table.username), "username", EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMUser.Table.name), "name", EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMUser.Table.email), "email", EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMUser.Table.position_code), "Position.Code", EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMUser.Table.position_name), "Position.Name", EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMUser.Table.role_name), "Role.Name", EnumDbdt.STRING)
         };
 
         public UserController(DatabasePmContext context, IUtlEmail utlEmail)
@@ -65,6 +71,12 @@ namespace databasepmapilearn6.Controllers
             {
                 query = query.DynamicSearch(input.Search, TABLE_COLUMN_MAPPING);
             }
+
+            // sort 
+            // if (input.Sort.Count > 0)
+            // {
+            //     query = query
+            // }
 
             return Res.Success();
         }
