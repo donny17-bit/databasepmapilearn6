@@ -9,6 +9,20 @@ public static class ExtIQueryable
 {
     private const decimal DecimalPrecision = 0.005m;
 
+    #region Pagination
+    // query pagination
+
+    public static IQueryable<T> SkipAndTake<T>(this IQueryable<T> query, int show, int page)
+    {
+        return query
+            .Skip(show * (page - 1))
+            .Take(show);
+    }
+
+    #endregion
+
+
+
     #region Search dynamic
     /// Search per kolom.
     public static IQueryable<T> DynamicSearch<T>(this IQueryable<T> query, Dictionary<string, string> search, List<ColumnMapping> columnMappings)
