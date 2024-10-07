@@ -83,8 +83,13 @@ namespace databasepmapilearn6.Controllers
             }
 
             // get data user
-            // var user = await query
-            // .SkipAnd
+            var user = await query
+            .SkipAndTake(input.Show, input.Page) // pagination
+            .Include(m => m.Position) // position
+            .Include(m => m.Role) // role
+            .ToArrayAsync();
+
+            var res = VMUser.Table.FromDb(user);
 
             return Res.Success();
         }
