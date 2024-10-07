@@ -32,6 +32,36 @@ namespace databasepmapilearn6.Controllers
             _utlEmail = utlEmail;
         }
 
+        [HttpGet("[action]")]
+        public async Task<ActionResult<MUser>> Table([FromQuery] IMUser.Table input)
+        {
+            if (_context.MUser == null) return Problem("Entity set 'DatabasePmContext.MUser' is null.");
+
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // validasi role user
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission");
+
+            // base query
+            var query = _context.MUser
+                .Include(m => m.Role)
+                .Include(m => m.Position)
+                .Where(m => (m.Id != 1) && (!m.IsDeleted));
+
+
+            // search 
+            if (input.Search.Count > 0)
+            {
+                // query = query.DynamicSearch()
+            }
+
+            return Res.Success();
+        }
+
         // GET: api/User
         [HttpGet("[action]")]
         public async Task<ActionResult<IEnumerable<MUser>>> GetUserInfo()

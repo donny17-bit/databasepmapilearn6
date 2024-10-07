@@ -13,7 +13,7 @@ public class Res
     public string message { get; }
     public object payload { get; }
 
-    #region constructor    
+    #region Constructor    
     private Res(bool success, string message = null, object payload = null) { this.success = success; this.version = CVersion.APP; this.message = message; this.payload = payload; }
 
     #endregion
@@ -51,10 +51,10 @@ public class Res
         return new BadRequestObjectResult(new Res(false, message: $"error {errorCode}: {e.Message}"));
     }
 
-    public static ActionResult Failed(ModelStateDictionary modelState)
-    {
-        return new BadRequestObjectResult(new Res(false, message: "Input not valid", payload: modelState.SelectMany(dic => dic.Value.Errors).Select(modelError => modelError.ErrorMessage)));
-    }
+    // public static ActionResult Failed(ModelStateDictionary modelState) => new BadRequestObjectResult(new Res(false, message: "Input not valid", payload: modelState.SelectMany(dic => dic.Value.Errors).Select(modelError => modelError.ErrorMessage)));
+
+    public static ActionResult Failed(ModelStateDictionary modelState) => new BadRequestObjectResult(new Res(false, message: "Input not valid", payload: null));
+
     #endregion
 
 

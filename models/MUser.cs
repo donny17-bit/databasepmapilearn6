@@ -4,7 +4,7 @@ using System.Net.NetworkInformation;
 namespace databasepmapilearn6.models;
 
 [Table("m_user")]
-public partial class MUser
+public class MUser
 {
 
     public int Id { get; set; }

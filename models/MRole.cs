@@ -4,7 +4,7 @@ using System.Net.NetworkInformation;
 namespace databasepmapilearn6.models;
 
 [Table("m_role")]
-public partial class MRole
+public class MRole
 {
     // constructor
     public MRole()

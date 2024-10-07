@@ -12,7 +12,7 @@ public class IMUser
         [Required]
         public int position_id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "username tidak boleh kosong")]
         public string Username { get; set; } = null!;
 
         [Required]
@@ -40,5 +40,9 @@ public class IMUser
 
         [Required]
         public string Email { get; set; } = null!;
+    }
+
+    public class Table : IMTable
+    {
     }
 }
