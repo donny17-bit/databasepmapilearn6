@@ -82,6 +82,9 @@ namespace databasepmapilearn6.Controllers
                 query = query.OrderByDescending(m => m.Id);
             }
 
+            // count filtered data
+            var userCount = await query.CountAsync();
+
             // get data user
             var user = await query
             .SkipAndTake(input.Show, input.Page) // pagination
@@ -91,7 +94,7 @@ namespace databasepmapilearn6.Controllers
 
             var res = VMUser.Table.FromDb(user);
 
-            return Res.Success();
+            return ResTable.Success(res, userCount);
         }
 
         // GET: api/User

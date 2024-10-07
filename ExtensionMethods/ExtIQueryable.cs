@@ -127,9 +127,12 @@ public static class ExtIQueryable
         if (sort?.Count <= 0) return query;
 
         // konstruksi pasangan nama kolom dan sort value
-        var columnMappedSort = new List<ColumnMappedSort>(sort
+        var collection = sort
                 .Where(m => m.Value != null)
-                .Select(m => ColumnMappedSort.Create(columnMappings.First(n => n.viewColumnName == m.Key).dbColumnName, m.Value)));
+                .Select(m => ColumnMappedSort
+                    .Create(columnMappings.First(n => n.viewColumnName == m.Key)
+                    .dbColumnName, m.Value));
+        var columnMappedSort = new List<ColumnMappedSort>(collection);
 
         // jangan lakukan apa apa jika user tidak melakukan sort kolom
         if (columnMappedSort.Count <= 0) return query;

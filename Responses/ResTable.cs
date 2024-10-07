@@ -26,7 +26,7 @@ public class ResTable
 
 
     // success
-    public static IActionResult Success(object[] data, int total_data, object others)
+    public static ActionResult Success(object[] data, int total_data, object others = null)
     {
         return Res.Success(new ResTable(data, total_data, others));
     }
