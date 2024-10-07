@@ -242,8 +242,8 @@ namespace databasepmapilearn6.Controllers
 
             var user = new MUser
             {
-                RoleId = input.RoleId,
-                PositionId = input.PositionId,
+                RoleId = input.role_id,
+                PositionId = input.position_id,
                 Username = input.Username,
                 Name = input.Name,
                 Email = input.Email,
@@ -254,7 +254,6 @@ namespace databasepmapilearn6.Controllers
                 IsDeleted = false
             };
 
-
             try
             {
                 await _context.MUser.AddAsync(user);
@@ -264,11 +263,12 @@ namespace databasepmapilearn6.Controllers
                 _utlEmail.Send(logger, imEmailMessage);
 
                 // log success
-                logger.Success();
+                // logger.Success(); // default logger
+                logger.Success(rawPassword); // untuk sementara, karena password blm bisa dikirim ke email
+
 
                 // when success return success code
-                // return Res.Success();  // default success
-                return Res.Success(new { password = rawPassword }); // untuk sementara, karena password blm bisa dikirim ke email
+                return Res.Success();
             }
             catch (Exception e)
             {
