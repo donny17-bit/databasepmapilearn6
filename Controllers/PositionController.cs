@@ -6,11 +6,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.InputModels;
+using databasepmapilearn6.Responses;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PositionController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -18,6 +23,38 @@ namespace databasepmapilearn6.Controllers
         public PositionController(DatabasePmContext context)
         {
             _context = context;
+        }
+
+        // GET: api/position/dropdown?
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Dropdown([FromQuery] IMPosition.Dropdown input)
+        {
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // base query 
+            var query = _context.MPositions.Where(m => (m.Id != 1) && (!m.IsDeleted));
+
+            // search
+            if (!string.IsNullOrEmpty(input.Search))
+            {
+                query = query.Where(m => m.Name.ToLower().Contains(input.Search.ToLower()));
+            }
+
+            // get data from database
+            var position = await query
+                .Take(input.Show)
+                .Union(query.Where(m => input.AlreadyIds.Contains(m.Id)))
+                .OrderByDescending(m => m.Id)
+                .ToArrayAsync();
+
+            // create response
+            var res = VMPosition.Dropdown.FromDb(position);
+
+            return Res.Success(res);
         }
 
         // GET: api/Position

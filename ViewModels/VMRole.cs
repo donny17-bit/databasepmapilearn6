@@ -42,9 +42,6 @@ public class VMRole
         private Dropdown(string value, string text) : base(value, text)
         { }
 
-        public static Dropdown[] FromDb(MRole[] role)
-        {
-            return role.Select(m => new Dropdown(m.Id.ToString(), m.Name)).ToArray();
-        }
+        public static Dropdown[] FromDb(MRole[] role) => role.Select(m => new Dropdown(m.Id.ToString(), m.Name)).ToArray();
     }
 }

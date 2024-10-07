@@ -25,7 +25,9 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
-        public async Task<ActionResult> Dropdown([FromQuery] IMRole.Dropdown input)
+        // GET : /api/role/dropdown?
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Dropdown([FromQuery] IMRole.Dropdown input)
         {
             if (_context.MRole == null) return Problem("Entity set 'DatabasePmContext.MRole' is null.");
 
