@@ -8,19 +8,20 @@ namespace databasepmapilearn6.InputModels;
 
 public class IMClaim
 {
-    public int Id {get; set;}
-    public string Username {get; set;} = null!;
-    public int RoleId {get; set;}
-    public int PositionId {get; set;}
-    public string Name {get; set;} = null!;
-    public string Email {get; set;} = null!;
+    public int Id { get; set; }
+    public string Username { get; set; } = null!;
+    public int RoleId { get; set; }
+    public int PositionId { get; set; }
+    public string Name { get; set; } = null!;
+    public string Email { get; set; } = null!;
 
     // private constractor
-    private IMClaim() {}
+    private IMClaim() { }
 
-    public static IMClaim FromUserClaim(IEnumerable<Claim> userClaims) 
+    public static IMClaim FromUserClaim(IEnumerable<Claim> userClaims)
     {
-        return new IMClaim {
+        return new IMClaim
+        {
             Id = userClaims.GetUserId(),
             Username = userClaims.GetUsername(),
             RoleId = userClaims.GetRoleId(),
@@ -33,10 +34,11 @@ public class IMClaim
         // include uppercase and lowercase letter
     }
 
-    
-    public static IMClaim FromDb(MUser userClaims) 
+
+    public static IMClaim FromDb(MUser userClaims)
     {
-        return new IMClaim {
+        return new IMClaim
+        {
             Id = userClaims.Id,
             Username = userClaims.Username,
             RoleId = userClaims.RoleId,
@@ -47,7 +49,8 @@ public class IMClaim
     }
 
     // ntar cari tahu cara kerjanya kek mana
-    public Claim[] ToClaim() {
+    public Claim[] ToClaim()
+    {
         return new Claim[] {
             new(JwtRegisteredClaimNames.UniqueName, Username),
             new(ClaimTypes.Role, RoleId.ToString()),

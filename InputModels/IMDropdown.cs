@@ -4,6 +4,7 @@ namespace databasepmapilearn6.InputModels;
 
 public abstract class IMDropdown
 {
+    // search query
     public string? Search { get; set; }
 
     // number of data to be displayed

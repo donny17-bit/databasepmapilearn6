@@ -4,6 +4,11 @@ namespace databasepmapilearn6.InputModels;
 
 public class IMRole
 {
+
+    public class Dropdown : IMDropdown
+    {
+    }
+
     public class CreateRole
     {
         [Required]

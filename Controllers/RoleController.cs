@@ -9,6 +9,7 @@ using databasepmapilearn6.models;
 using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.InputModels;
 using databasepmapilearn6.ViewModels;
+using databasepmapilearn6.Responses;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -23,6 +24,38 @@ namespace databasepmapilearn6.Controllers
         {
             _context = context;
         }
+
+        public async Task<ActionResult> Dropdown([FromQuery] IMRole.Dropdown input)
+        {
+            if (_context.MRole == null) return Problem("Entity set 'DatabasePmContext.MRole' is null.");
+
+            // validaasi input 
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get claim
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // base query
+            var query = _context.MRole.Where(m => (m.Id != 1) && (!m.IsDeleted));
+
+            // search
+            if (!string.IsNullOrEmpty(input.Search))
+            {
+                query = query.Where(m => m.Name.ToLower().Contains(input.Search.ToLower()));
+            }
+
+            // get the data from database
+            var role = await query
+                .Take(input.Show)
+                .Union(query.Where(m => input.AlreadyIds.Contains(m.Id)))
+                .OrderByDescending(m => m.Id)
+                .ToArrayAsync();
+
+            var res = VMRole.Dropdown.FromDb(role);
+
+            return Res.Success(res);
+        }
+
 
         // GET: api/Role/5
         [HttpGet("{id}")]

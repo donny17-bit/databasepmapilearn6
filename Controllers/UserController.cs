@@ -188,7 +188,7 @@ namespace databasepmapilearn6.Controllers
             return Ok(res);
         }
 
-        // POST: api/User/Create
+        // POST: api/User
         [HttpPost]
         public async Task<ActionResult<MUser>> Create([FromBody] IMUser.Create input)
         {
@@ -267,7 +267,8 @@ namespace databasepmapilearn6.Controllers
                 logger.Success();
 
                 // when success return success code
-                return Res.Success();
+                // return Res.Success();  // default success
+                return Res.Success(new { password = rawPassword }); // untuk sementara, karena password blm bisa dikirim ke email
             }
             catch (Exception e)
             {

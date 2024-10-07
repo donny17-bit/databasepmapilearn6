@@ -36,4 +36,15 @@ public class VMRole
         public string IconName { get; set; } = null!;
         public string MenuName { get; set; } = null!;
     }
+
+    public class Dropdown : VMDropdown
+    {
+        private Dropdown(string value, string text) : base(value, text)
+        { }
+
+        public static Dropdown[] FromDb(MRole[] role)
+        {
+            return role.Select(m => new Dropdown(m.Id.ToString(), m.Name)).ToArray();
+        }
+    }
 }

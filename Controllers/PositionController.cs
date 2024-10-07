@@ -24,10 +24,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MPosition>>> GetMPositions()
         {
-          if (_context.MPositions == null)
-          {
-              return NotFound();
-          }
+            if (_context.MPositions == null)
+            {
+                return NotFound();
+            }
             return await _context.MPositions.ToListAsync();
         }
 
@@ -35,10 +35,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MPosition>> GetMPosition(int id)
         {
-          if (_context.MPositions == null)
-          {
-              return NotFound();
-          }
+            if (_context.MPositions == null)
+            {
+                return NotFound();
+            }
             var mPosition = await _context.MPositions.FindAsync(id);
 
             if (mPosition == null)
@@ -85,10 +85,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MPosition>> PostMPosition(MPosition mPosition)
         {
-          if (_context.MPositions == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MPositions'  is null.");
-          }
+            if (_context.MPositions == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MPositions'  is null.");
+            }
             _context.MPositions.Add(mPosition);
             await _context.SaveChangesAsync();
 
