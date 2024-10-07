@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj": {}
+    "d:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj": {}
   },
   "projects": {
-    "D:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj": {
+    "d:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj",
+        "projectUniqueName": "d:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj",
         "projectName": "databasepmapilearn6",
-        "projectPath": "D:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj",
+        "projectPath": "d:\\Code\\.net\\databasepmapilearn6\\databasepmapilearn6.csproj",
         "packagesPath": "C:\\Users\\doniw\\.nuget\\packages\\",
-        "outputPath": "D:\\Code\\.net\\databasepmapilearn6\\obj\\",
+        "outputPath": "d:\\Code\\.net\\databasepmapilearn6\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\doniw\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -138,6 +138,10 @@
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
               "version": "[6.36.0, )"
+            },
+            "System.Linq.Dynamic.Core": {
+              "target": "Package",
+              "version": "[1.4.5, )"
             }
           },
           "imports": [
