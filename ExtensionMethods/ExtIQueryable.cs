@@ -9,6 +9,7 @@ public static class ExtIQueryable
 {
     private const decimal DecimalPrecision = 0.005m;
 
+    #region Search dynamic
     /// Search per kolom.
     public static IQueryable<T> DynamicSearch<T>(this IQueryable<T> query, Dictionary<string, string> search, List<ColumnMapping> columnMappings)
     {
@@ -101,7 +102,32 @@ public static class ExtIQueryable
         // return combined query
         return query;
     }
+    #endregion
 
+
+    #region Sort dynamic
+    // sort per kolom
+    public static IQueryable<T> DynamicSort<T>(this IQueryable<T> query, Dictionary<string, bool?> sort, List<ColumnMapping> columnMappings)
+    {
+        // pastikan ada yg ingin di sort
+        if (sort?.Count <= 0) return query;
+
+        // konstruksi pasangan nama kolom dan sort value
+        var columnMappedSort = new List<ColumnMappedSort>(sort
+                .Where(m => m.Value != null)
+                .Select(m => ColumnMappedSort.Create(columnMappings.First(n => n.viewColumnName == m.Key).dbColumnName, m.Value)));
+
+        // jangan lakukan apa apa jika user tidak melakukan sort kolom
+        if (columnMappedSort.Count <= 0) return query;
+
+        // gabung query
+        return query.OrderBy(string.Join(", ", columnMappedSort
+                .Where(m => m.isAscending != null)
+                .Select(m => m.dbColumnName + " " + (m.isAscending ?? true ? "ASC" : "DESC"))
+            ));
+    }
+
+    #endregion
 
     #region Helper
     // helper
@@ -152,6 +178,29 @@ public static class ExtIQueryable
             return new ColumnMappedSearch(dbColumnName, searchQuery, dbDataType);
         }
     }
+
+    // mapping kolom untuk di-sort
+    public class ColumnMappedSort
+    {
+        public string dbColumnName { get; set; }
+        public bool? isAscending { get; set; }
+
+        // constructor
+        public ColumnMappedSort(
+            string dbColumnName,
+            bool? isAscending
+        )
+        {
+            this.dbColumnName = dbColumnName;
+            this.isAscending = isAscending;
+        }
+
+        public static ColumnMappedSort Create(string dbColumnName, bool? isAscending)
+        {
+            return new ColumnMappedSort(dbColumnName, isAscending);
+        }
+    }
+
 
     #endregion
 }

@@ -73,10 +73,18 @@ namespace databasepmapilearn6.Controllers
             }
 
             // sort 
-            // if (input.Sort.Count > 0)
-            // {
-            //     query = query
-            // }
+            if (input.Sort.Count > 0)
+            {
+                query = query.DynamicSort(input.Sort, TABLE_COLUMN_MAPPING);
+            }
+            else
+            {
+                query = query.OrderByDescending(m => m.Id);
+            }
+
+            // get data user
+            // var user = await query
+            // .SkipAnd
 
             return Res.Success();
         }
