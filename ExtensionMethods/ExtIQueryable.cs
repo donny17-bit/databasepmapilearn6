@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Linq.Dynamic.Core;
+// using System.Linq.Dynamic.Core;
 using databasepmapilearn6.Enumerations;
 
 namespace databasepmapilearn6.ExtensionMethods;
@@ -53,6 +54,7 @@ public static class ExtIQueryable
                         query = query.Where($"({columnName[0]}.ToLower()).Contains(\"{columnMapSearch.searchQuery.ToLower()}\")");
                     }
                     break;
+
                 // tipe decimal
                 case EnumDbdt.DECIMAL:
                     // konversi search string ke desimal
@@ -61,10 +63,43 @@ public static class ExtIQueryable
                     decimal higherValue = searchValue + DecimalPrecision;
                     query = query.Where($"m => @0 < m.{columnName} AND m.{columnName} <= @1", lowerValue, higherValue);
                     break;
+
+                // tipe date
+                case EnumDbdt.DATE:
+                    string[] searcComponent = columnMapSearch.searchQuery.Split("-");
+
+                    var tanggal = query.Select($"new (id as id ,{columnName[0]}.ToString(\"yyyy-MM-dd\") as date)").ToDynamicList();
+                    var id = tanggal.Where(m => m.date == columnMapSearch.searchQuery).Select(m => m.id).ToDynamicList();
+
+                    query = query.Where($"{id}.Contains(id.ToString())");
+                    break;
+
+                // tipe bool
+                case EnumDbdt.BOOL:
+                    break;
+
+                // tipe int
+                case EnumDbdt.INT:
+                    int searchValueInt;
+                    if (int.TryParse(columnMapSearch.searchQuery, out searchValueInt))
+                    {
+                        query = query.Where($"{columnName[0]}.ToString().Contains(\"{searchValueInt}\")");
+                    }
+                    break;
+
+                // tipe int year
+                case EnumDbdt.INTTOYEAR:
+                    int searchNumber;
+                    if (int.TryParse(columnMapSearch.searchQuery, out searchNumber))
+                    {
+                        query = query.Where("m => m.{columnName[0]}.Year.ToString().Contains(\"{searchNumber}\")");
+                    }
+                    break;
             }
         }
 
-        return null;
+        // return combined query
+        return query;
     }
 
 
