@@ -55,7 +55,7 @@ namespace databasepmapilearn6.Controllers
 
             var res = VMRole.Dropdown.FromDb(role);
 
-            return Res.Success(res);
+            return ResDropdown.Success(res);
         }
 
 

@@ -54,7 +54,7 @@ namespace databasepmapilearn6.Controllers
             // create response
             var res = VMPosition.Dropdown.FromDb(position);
 
-            return Res.Success(res);
+            return ResDropdown.Success(res);
         }
 
         // GET: api/Position
