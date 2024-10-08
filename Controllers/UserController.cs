@@ -342,8 +342,8 @@ namespace databasepmapilearn6.Controllers
             }
         }
 
-        // DELETE: api/User/Delete/5
-        [HttpDelete("[action]/{id}")]
+        // DELETE: api/User/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             if (_context.MUser == null)
