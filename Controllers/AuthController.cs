@@ -193,7 +193,8 @@ namespace databasepmapilearn6.Controllers
                 await _context.SaveChangesAsync();
 
                 // log
-                utlLogger.Success();
+                utlLogger.Success($"new password : {input.new_pass}"); // untuk sementara tampilin di log
+                utlLogger.Success(); // default 
             }
             catch (System.Exception e)
             {
