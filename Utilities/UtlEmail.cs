@@ -66,6 +66,8 @@ public class UtlEmail : IUtlEmail
                 // connect to target smtp server
                 // not using ssl because target server not supported
                 smtpClient.Connect(_confEmail.SmtpServer, _confEmail.SmtpPort, MailKit.Security.SecureSocketOptions.None);
+                // using SSL
+                // smtpClient.Connect(_confEmail.SmtpServer, _confEmail.SmtpPort, MailKit.Security.SecureSocketOptions.SslOnConnect);
 
                 // not using oauth functionality
                 smtpClient.AuthenticationMechanisms.Remove("XOAUTH2");

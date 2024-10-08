@@ -6,6 +6,11 @@ namespace databasepmapilearn6.models;
 [Table("m_user")]
 public class MUser
 {
+    // constructor
+    public MUser()
+    {
+        JobFile = new HashSet<MJobFile>();
+    }
 
     public int Id { get; set; }
 
@@ -50,6 +55,7 @@ public class MUser
 
     public virtual MRole Role { get; set; } = null!;
     public virtual MPosition Position { get; set; } = null!;
+    public virtual ICollection<MJobFile> JobFile { get; set; }
 
     #endregion
 }

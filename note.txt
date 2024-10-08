@@ -1,2 +1,10 @@
 1. don't forget add Serilog object in the appsetting.json to add logger in the app
 2. EmailConfiguration in appsetting.json is use to set email server confifuration
+
+default smtp server configration
+"EmailConfiguration": {
+    "SmtpServer": "172.20.20.34",
+    "SmtpPort": 587,
+    "SmtpUsername": "databasepmonline@virtual.indomaret.co.id",
+    "SmtpPassword": "d4t4@sd5"
+  },

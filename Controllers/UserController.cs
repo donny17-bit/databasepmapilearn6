@@ -65,13 +65,14 @@ namespace databasepmapilearn6.Controllers
                 .Include(m => m.Position)
                 .Where(m => (m.Id != 1) && (!m.IsDeleted));
 
-
+            // cari tau cara bacanya 
             // search 
             if (input.Search.Count > 0)
             {
                 query = query.DynamicSearch(input.Search, TABLE_COLUMN_MAPPING);
             }
 
+            // cari tau cara bacanya
             // sort 
             if (input.Sort.Count > 0)
             {
@@ -350,20 +351,24 @@ namespace databasepmapilearn6.Controllers
                 return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
 
+            // initialize log             
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(UserController)}/{nameof(Delete)}", id.ToString());
+
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
             // check role id
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to delete user");
-
-            // check MJobFile
-            // belum ditambahkan 
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission to delete user");
 
             // get user data
             var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
-            if (user == null) return BadRequest("User not found in the Database");
+            if (user == null) return Res.NotFound("User");
+
+            // check MJobFile
+            bool jobFile = user.JobFile.Any(m => (m.UserMgr == id) && (!m.IsDeleted));
+            if (jobFile) return Res.Failed("user tidak dapat dihapus");
 
             // check target id 
-            if (user.RoleId == 1 || user.RoleId == 2) return BadRequest("admin user cannot be deleted");
+            if (user.RoleId == 1 || user.RoleId == 2) return Res.Failed("admin user cannot be deleted");
 
             user.IsDeleted = true;
             user.UpdatedBy = iClaim.Id;
@@ -376,14 +381,16 @@ namespace databasepmapilearn6.Controllers
 
                 // commit
                 await _context.SaveChangesAsync();
+
+                logger.Success();
             }
             catch (System.Exception e)
             {
 
-                return BadRequest($"Error on the delete User API : {e}");
+                return Res.Failed(logger, e);
             }
 
-            return Ok("Success delete user");
+            return Res.Success();
         }
 
         // PUT: api/User/resetPassword/5
