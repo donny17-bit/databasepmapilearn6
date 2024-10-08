@@ -30,6 +30,7 @@ namespace databasepmapilearn6.Controllers
 
         private readonly List<ColumnMapping> TABLE_COLUMN_MAPPING = new List<ColumnMapping>()
         {
+            // nama variable harus sama dengan view model (case sensitif)
             ColumnMapping.Create(nameof(VMUser.Table.username), "username", EnumDbdt.STRING),
             ColumnMapping.Create(nameof(VMUser.Table.name), "name", EnumDbdt.STRING),
             ColumnMapping.Create(nameof(VMUser.Table.email), "email", EnumDbdt.STRING),
@@ -201,14 +202,17 @@ namespace databasepmapilearn6.Controllers
             return Res.Success(res);
         }
 
-        // PUT: api/User/Edit/5
-        [HttpPut("[action]/{id}")]
+        // PUT: api/User/5
+        [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] IMUser.Edit input)
         {
             if (_context.MUser == null)
             {
                 return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
+
+            // initialize log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(UserController)}/{nameof(Edit)}", UtlConverter.ObjectToJson(input));
 
             // ini tidak perlu karena jika id null akan mengarah ke action lain dan itu tidak ada methodnya
             // add check if id parameter null or not
@@ -228,41 +232,36 @@ namespace databasepmapilearn6.Controllers
             // ambil data user from DB
             var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
 
-
             // check if username exist on DB or not
-            if (user == null) return BadRequest("user not found");
+            if (user == null) return Res.NotFound("user");
 
             // check role user
-            if (user.RoleId == 1) return BadRequest("this user cannot be edit");
+            if (user.RoleId == 1) return Res.Failed("this user cannot be edit");
 
             // check username on the database
             if (user.Username != input.Username)
             {
                 var username = await _context.MUser.Where(m => (m.Username == input.Username) && (!m.IsDeleted)).SingleOrDefaultAsync();
-                if (username != null) return BadRequest("Username already exists");
+                if (username != null) return Res.Failed("Username already exists");
             }
 
+            // tambah sendiri
             // check email on the database
             if (user.Email != input.Email)
             {
                 var email = await _context.MUser.Where(m => (m.Email == input.Email) && (!m.IsDeleted)).SingleOrDefaultAsync();
-                if (email != null) return BadRequest("email already exists");
+                if (email != null) return Res.Failed("Email already exists");
             }
 
             // edit user data
-            user.RoleId = input.RoleId;
-            user.PositionId = input.PositionId;
+            user.RoleId = input.role_id;
+            user.PositionId = input.position_id;
             user.Username = input.Username;
             user.Name = input.Name;
             user.Email = input.Email;
             user.UpdatedBy = iClaim.Id;
             user.UpdatedDate = DateTime.Now;
 
-            var res = new
-            {
-                username = user.Username,
-                message = "Success edit user"
-            };
 
             try
             {
@@ -271,13 +270,16 @@ namespace databasepmapilearn6.Controllers
 
                 // commit
                 await _context.SaveChangesAsync();
+
+                // log
+                logger.Success();
             }
             catch (System.Exception e)
             {
-                return BadRequest($"Error occured in edit user in UserController : {e}");
+                return Res.Failed(logger, e);
             }
 
-            return Ok(res);
+            return Res.Success();
         }
 
         // POST: api/User

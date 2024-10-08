@@ -27,10 +27,10 @@ public class IMUser
     public class Edit
     {
         [Required]
-        public int RoleId { get; set; }
+        public int role_id { get; set; }
 
         [Required]
-        public int PositionId { get; set; }
+        public int position_id { get; set; }
 
         [Required]
         public string Username { get; set; } = null!;

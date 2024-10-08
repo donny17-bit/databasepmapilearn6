@@ -9,6 +9,10 @@ public class IMRole
     {
     }
 
+    public class Table : IMTable
+    {
+    }
+
     public class CreateRole
     {
         [Required]

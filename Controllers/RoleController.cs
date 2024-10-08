@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.InputModels;
 using databasepmapilearn6.ViewModels;
 using databasepmapilearn6.Responses;
+using databasepmapilearn6.ExtensionMethods;
+using static databasepmapilearn6.ExtensionMethods.ExtIQueryable;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -20,9 +22,59 @@ namespace databasepmapilearn6.Controllers
     {
         private readonly DatabasePmContext _context;
 
+        // column mapping
+        private readonly List<ColumnMapping> ColumnMappings = new List<ColumnMapping>{
+            // nama variable harus sama dengan view model (case sensitif)
+            ColumnMapping.Create(nameof(VMRole.Table.name), "name", Enumerations.EnumDbdt.STRING),
+        };
+
         public RoleController(DatabasePmContext context)
         {
             _context = context;
+        }
+
+        [HttpGet("[action]")]
+        public async Task<ActionResult> Table([FromQuery] IMRole.Table input)
+        {
+            if (_context.MRole == null) return Problem("Entity set 'DatabasePmContext.MRole' is null.");
+
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get claim 
+            var iClaim = IMClaim.FromUserClaim(User.Claims);
+
+            // validasi role user
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission");
+
+            // base query
+            var query = _context.MRole.Where(m => (m.Id != 1) && (!m.IsDeleted));
+
+            if (input.Search.Count() > 0)
+            {
+                // lakukan pencarian
+                query = query.DynamicSearch(input.Search, ColumnMappings);
+            }
+
+            if (input.Sort.Count() > 0)
+            {
+                // lakukan sorting
+                query = query.DynamicSort(input.Sort, ColumnMappings);
+            }
+            else
+            {
+                query = query.OrderByDescending(m => m.Id);
+            }
+
+            var mRoleCount = await query.CountAsync();
+
+            var mRole = await query
+                .SkipAndTake(input.Show, input.Page)
+                .ToArrayAsync();
+
+            var res = VMRole.Table.FromDb(mRole);
+
+            return ResTable.Success(res, mRoleCount);
         }
 
         // GET : /api/role/dropdown?
@@ -61,7 +113,7 @@ namespace databasepmapilearn6.Controllers
 
         // GET: api/Role/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MRole>> GetMRole(int? id)
+        public async Task<ActionResult<MRole>> Detail(int? id)
         {
             if (_context.MRole == null)
             {
@@ -75,7 +127,7 @@ namespace databasepmapilearn6.Controllers
             // get role id current user
             var RoleId = IMClaim.FromUserClaim(User.Claims).RoleId;
 
-            if (RoleId != 1 && RoleId != 2) return BadRequest("you don't have permission to access");
+            if (RoleId != 1 && RoleId != 2) return Res.Failed("you don't have permission to access");
 
             var mRole = await _context.MRole
                 // user
@@ -86,11 +138,11 @@ namespace databasepmapilearn6.Controllers
                 .Where(m => (m.Id == id) && (!m.IsDeleted))
                 .SingleOrDefaultAsync();
 
-            if (mRole == null) return BadRequest("Role not found in the database");
+            if (mRole == null) return Res.NotFound("Role");
 
             var res = VMRole.Detail.FromDb(mRole);
 
-            return Ok(res);
+            return Res.Success(res);
         }
 
         // PUT: api/Role/5

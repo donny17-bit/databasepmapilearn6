@@ -8,7 +8,7 @@ public class VMRole
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public List<MenuList> MenuLists { get; set; } = null!;
+        public List<MenuList> menu_list { get; set; } = null!;
 
         private Detail(string CreatedBy, DateTime CreatedDate, string? UpdateBy, DateTime? UpdateDate, bool IsDeleted) : base(CreatedBy, CreatedDate, UpdateBy, UpdateDate, IsDeleted)
         {
@@ -20,11 +20,11 @@ public class VMRole
             {
                 Id = mRole.Id,
                 Name = mRole.Name,
-                MenuLists = mRole.RoleMenus.Select(m => new MenuList
+                menu_list = mRole.RoleMenus.Select(m => new MenuList
                 {
-                    MenuId = m.Menu.ID,
-                    IconName = m.Menu.Icon.Name,
-                    MenuName = m.Menu.Name
+                    menu_id = m.Menu.ID,
+                    icon_name = m.Menu.Icon.Name,
+                    menu_name = m.Menu.Name
                 }).ToList()
             };
         }
@@ -32,9 +32,9 @@ public class VMRole
 
     public class MenuList
     {
-        public int MenuId { get; set; }
-        public string IconName { get; set; } = null!;
-        public string MenuName { get; set; } = null!;
+        public int menu_id { get; set; }
+        public string icon_name { get; set; } = null!;
+        public string menu_name { get; set; } = null!;
     }
 
     public class Dropdown : VMDropdown
@@ -45,6 +45,21 @@ public class VMRole
         public static Dropdown[] FromDb(MRole[] role)
         {
             return role.Select(m => new Dropdown(m.Id.ToString(), m.Name)).ToArray();
+        }
+    }
+
+    public class Table
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+
+        public static Table[] FromDb(MRole[] role)
+        {
+            return role.Select(m => new Table
+            {
+                id = m.Id,
+                name = m.Name,
+            }).ToArray();
         }
     }
 }
