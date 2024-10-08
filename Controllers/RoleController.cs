@@ -12,6 +12,7 @@ using databasepmapilearn6.ViewModels;
 using databasepmapilearn6.Responses;
 using databasepmapilearn6.ExtensionMethods;
 using static databasepmapilearn6.ExtensionMethods.ExtIQueryable;
+using databasepmapilearn6.Utilities;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -110,7 +111,6 @@ namespace databasepmapilearn6.Controllers
             return ResDropdown.Success(res);
         }
 
-
         // GET: api/Role/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MRole>> Detail(int? id)
@@ -147,21 +147,24 @@ namespace databasepmapilearn6.Controllers
 
         // PUT: api/Role/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMRole(int id, IMRole.EditRole input)
+        public async Task<IActionResult> Edit(int id, IMRole.EditRole input)
         {
             if (_context.MRole == null) return Problem("Entity set 'DatabasePmContext.MRole' is null in PutMRole RoleController.");
-
+            if (_context.MRoleMenu == null) return Problem("Entity set 'DatabasePmContext.MRoleMenu' is null in PutMRole RoleController.");
             // check input is valid or not
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
             if (!ModelState.IsValid) return BadRequest();
 
+            // initialize log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(RoleController)}/{nameof(Edit)}", UtlConverter.ObjectToJson(input));
+
             // get claim (user info)
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
             // validate user
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to edit role");
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission to edit role");
 
             // get role from the DB
             var RoleName = await _context.MRole
@@ -169,47 +172,60 @@ namespace databasepmapilearn6.Controllers
                 .Where(m => (m.Id == id) && (!m.IsDeleted))
                 .SingleOrDefaultAsync();
 
-            if (RoleName == null) return BadRequest("Role not found in the database");
+            if (RoleName == null) return Res.NotFound("Role");
 
             // change role name
-            RoleName.Name = input.Name;
+            RoleName.Name = input.name;
             RoleName.UpdatedBy = iClaim.Id;
             RoleName.UpdatedDate = DateTime.Now;
 
             // get all menu id from database
-            List<int> MenuIdList = RoleName.RoleMenus.Select(m => m.MenuId).ToList();
+            List<int> AlreadyMenuIdList = RoleName.RoleMenus.Select(m => m.MenuId).ToList();
 
             // edit menu id
-            var RoleMenus = RoleName.RoleMenus.Where(m => !input.MenuId.Contains(m.MenuId));
+            var RoleMenus = RoleName.RoleMenus.Where(m => !input.menu_id.Contains(m.MenuId));
 
             // update 
             // blm tau cara bacanya
-            RoleName.RoleMenus.Where(m => input.MenuId.Contains(m.MenuId)).Select(m =>
+            RoleName.RoleMenus.Where(m => input.menu_id.Contains(m.MenuId)).Select(m =>
             {
-                int insert = input.MenuId.Single(n => n == m.MenuId);
+                int insert = input.menu_id.Single(n => n == m.MenuId);
                 return m;
             }).ToList();
 
-            // insert
-            // lanjut nnti
+            // masih ga tau gmn bacanya
+            var loop = input.menu_id.Where(m => !AlreadyMenuIdList.Contains(m));
 
-
-            Console.WriteLine($"isi dari RoleMenus : {RoleMenus}");
+            // insert to the role_menu table 
+            foreach (var menu_id in loop)
+            {
+                RoleName.RoleMenus.Add(new MRoleMenu
+                {
+                    MenuId = menu_id
+                });
+            }
 
             try
             {
+                _context.MRoleMenu.RemoveRange(RoleMenus); // cari tau ini untuk apa
+                _context.MRole.Update(RoleName);
+
+                // commit
                 await _context.SaveChangesAsync();
+
+                // log
+                logger.Success();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (System.Exception e)
             {
-                return BadRequest();
+                return Res.Failed(logger, e);
             }
 
-            return NoContent();
+            return Res.Success();
         }
 
         // POST: api/Role
-        [HttpPost("[action]")]
+        [HttpPost]
         public async Task<ActionResult<MRole>> Create([FromBody] IMRole.CreateRole input)
         {
             if (_context.MRole == null)
@@ -217,28 +233,31 @@ namespace databasepmapilearn6.Controllers
                 return Problem("Entity set 'DatabasePmContext.MRole' is null.");
             }
 
+            // log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(RoleController)}/{nameof(Create)}", UtlConverter.ObjectToJson(input));
+
             // check input is valid or not
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
 
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
             // cek role current user
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to create role");
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission to create role");
 
             // check in the DB if the name already exists or not
-            var RoleName = await _context.MRole.Where(m => (m.Name == input.Name) && (!m.IsDeleted)).SingleOrDefaultAsync();
-            if (RoleName != null) return BadRequest("Role name already exists in the DB");
+            var RoleName = await _context.MRole.Where(m => (m.Name == input.name) && (!m.IsDeleted)).SingleOrDefaultAsync();
+            if (RoleName != null) return Res.Failed("Role name already exists in the DB");
 
             var mRole = new MRole
             {
-                Name = input.Name,
+                Name = input.name,
                 // add role menu masih bingung bacanya
                 RoleMenus = new List<MRoleMenu>(
-                    input.MenuId.Select(m => new MRoleMenu
+                    input.menu_id.Select(m => new MRoleMenu
                     {
                         MenuId = m
                     }).ToList()
@@ -253,13 +272,14 @@ namespace databasepmapilearn6.Controllers
             {
                 await _context.MRole.AddAsync(mRole);
                 await _context.SaveChangesAsync();
+                logger.Success();
             }
             catch (System.Exception e)
             {
-                return BadRequest($"Error on create role in RoleController : {e}");
+                return Res.Failed(logger, e);
             }
 
-            return Ok(input);
+            return Res.Success();
         }
 
         // DELETE: api/Role/5
@@ -271,13 +291,16 @@ namespace databasepmapilearn6.Controllers
                 return Problem("Entity set 'DatabasePmContext.MRole' is null.");
             }
 
+            // initialize logger
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(RoleController)}/{nameof(Delete)}", id.ToString());
+
             // get current user role 
             var iClaim = IMClaim.FromUserClaim(User.Claims);
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to delete role");
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission to delete role");
 
             // get role from DB
             var RoleName = await _context.MRole.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
-            if (RoleName == null) return BadRequest("Role not found on the Database");
+            if (RoleName == null) return Res.NotFound("Role");
 
             // modify is delete
             RoleName.UpdatedBy = iClaim.Id;
@@ -291,13 +314,16 @@ namespace databasepmapilearn6.Controllers
 
                 // commit
                 await _context.SaveChangesAsync();
+
+                // log
+                logger.Success();
             }
             catch (System.Exception e)
             {
-                return BadRequest($"Error on create role in RoleController : {e}");
+                return Res.Failed(logger, e);
             }
 
-            return Ok($"Success delele role dengan ID : {id}");
+            return Res.Success();
         }
 
         private bool MRoleExists(int id)
