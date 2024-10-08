@@ -158,22 +158,47 @@ namespace databasepmapilearn6.Controllers
 
             // this id check is unneccessary
             // because when the ID is null, router will auto chose GetMUser method (route: api/User)
-            // if(!id.HasValue) return BadRequest("please input user id");
+            // if (!id.HasValue) return BadRequest("please input user id");
 
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
             // check user role
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission");
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission");
 
-            // get user from db
-            var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+            // get user from database
+            var user = await _context.MUser
+                .Where(m => (m.Id == id) && (!m.IsDeleted))
+                .Select(m => new MUser
+                {
+                    Id = m.Id,
+                    RoleId = m.RoleId,
+                    PositionId = m.PositionId,
+                    Username = m.Username,
+                    Name = m.Name,
+                    Email = m.Email,
+                    CreatedBy = m.CreatedBy,
+                    CreatedDate = m.CreatedDate,
+                    UpdatedBy = m.UpdatedBy,
+                    UpdatedDate = m.UpdatedDate,
+                    Role = new MRole
+                    {
+                        Id = m.Role.Id,
+                        Name = m.Role.Name
+                    },
+                    Position = new MPosition
+                    {
+                        Id = m.Position.Id,
+                        Name = m.Position.Name
+                    }
+                })
+                .SingleOrDefaultAsync();
 
-            if (user == null) return BadRequest("user not found on the database");
+            if (user == null) return Res.NotFound("user not found on the database");
 
             var res = VMUser.Detail.FromDb(user);
 
-            return Ok(res);
+            return Res.Success(res);
         }
 
         // PUT: api/User/Edit/5
@@ -193,15 +218,16 @@ namespace databasepmapilearn6.Controllers
             // return bad request if it's invalid 
             // without this method, the checking is still occurs behind the scene but the model will not know if it's an invalid data
             // in other word this used to return badrequest response if it's invalid
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
 
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
             // check the role 
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("user don't have permission to edit user");
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission to edit user");
 
             // ambil data user from DB
             var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
+
 
             // check if username exist on DB or not
             if (user == null) return BadRequest("user not found");
@@ -428,8 +454,9 @@ namespace databasepmapilearn6.Controllers
             user.UpdatedDate = DateTime.Now;
 
             // initialize email
-            // var imEmailMessage = new List<IMEmail.Message>();
-            // var imEmailAddress = await 
+            // var imEmailMessage = new List<IMEmail.Message>(); 
+
+            // email notifikasi belum
 
             try
             {

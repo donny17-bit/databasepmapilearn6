@@ -50,7 +50,12 @@ public class VMUser
 
         public static Detail FromDb(MUser user)
         {
-            return new Detail(user.CreatedBy.ToString(), user.CreatedDate, user.UpdatedBy.ToString(), user.UpdatedDate, user.IsDeleted)
+            return new Detail(
+                user.CreatedBy.ToString(),
+                user.CreatedDate,
+                user.UpdatedBy.ToString(),
+                user.UpdatedDate,
+                user.IsDeleted)
             {
                 id = user.Id,
                 role_id = user.RoleId,
