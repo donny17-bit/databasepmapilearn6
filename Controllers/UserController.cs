@@ -330,7 +330,7 @@ namespace databasepmapilearn6.Controllers
 
                 // log success
                 // logger.Success(); // default logger
-                logger.Success(rawPassword); // untuk sementara, karena password blm bisa dikirim ke email
+                logger.Success($"password new user : {rawPassword}"); // untuk sementara, karena password blm bisa dikirim ke email
 
 
                 // when success return success code
@@ -393,8 +393,8 @@ namespace databasepmapilearn6.Controllers
             return Res.Success();
         }
 
-        // PUT: api/User/resetPassword/5
-        [HttpPut("reset-password/{id}")]
+        // PUT: api/User/resetpass/5
+        [HttpPut("resetpass/{id}")]
         public async Task<ActionResult> ResetPassword(int id)
         {
             if (_context.MUser == null)
@@ -402,34 +402,34 @@ namespace databasepmapilearn6.Controllers
                 return Problem("Entity set 'DatabasePmContext.MUser' is null.");
             }
 
+            // initialize log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(UserController)}/{nameof(ResetPassword)}", id.ToString());
+
             // get claim
             var iClaim = IMClaim.FromUserClaim(User.Claims);
 
             // check role id
-            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return BadRequest("you don't have permission to reset password");
+            if (iClaim.RoleId != 1 && iClaim.RoleId != 2) return Res.Failed("you don't have permission to reset password");
 
             // get user from database
             var user = await _context.MUser.Where(m => (m.Id == id) && (!m.IsDeleted)).SingleOrDefaultAsync();
 
             // check if user null or not
-            if (user == null) return BadRequest($"user with ID: {id} is not found");
+            if (user == null) return Res.NotFound($"user with ID: {id} ");
 
             // check if role user admin or not 
-            if (user.RoleId == 1 || user.RoleId == 2) return BadRequest("admin cannot reset password");
+            if (user.RoleId == 1 || user.RoleId == 2) return Res.Failed("user admin cannot reset password");
 
             // generate password 
-            var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(16);
+            var (rawPassword, hashedPassword) = UtlSecurity.GeneratePassword(8);
 
             user.Password = hashedPassword;
             user.UpdatedBy = iClaim.Id;
             user.UpdatedDate = DateTime.Now;
 
-            var res = new
-            {
-                user.Username,
-                password = rawPassword,
-                message = "reset password success"
-            };
+            // initialize email
+            // var imEmailMessage = new List<IMEmail.Message>();
+            // var imEmailAddress = await 
 
             try
             {
@@ -438,13 +438,17 @@ namespace databasepmapilearn6.Controllers
 
                 // commit
                 await _context.SaveChangesAsync();
+
+                // logging
+                logger.Success($"new password : {rawPassword}"); // sementara untuk lihat passsword generated, karena blm bisa kirim email
+                // logger.Success(); // default
             }
             catch (System.Exception e)
             {
-                return BadRequest($"Error on reset password User on UserController API : {e}");
+                return Res.Failed(logger, e);
             }
 
-            return Ok(res);
+            return Res.Success();
         }
     }
 }
