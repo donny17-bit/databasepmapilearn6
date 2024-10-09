@@ -6,11 +6,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.InputModels;
+using databasepmapilearn6.Responses;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UnitController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -20,14 +25,38 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
+        // Get: api/Unit/dropdown
+        [HttpGet("[action]")]
+        public async Task<ActionResult<MUnit>> Dropdown([FromQuery] IMUnit.Dropdown input)
+        {
+            if (_context.MUnit == null) return Problem("Entity set 'DatabasePmContext.MUnit' is null in Dropdown UnitController.");
+
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // cek role user 
+            // nnti
+
+            // get the data
+            var units = await _context.MUnit.Where(m => !m.IsDeleted).ToArrayAsync();
+            if (units == null) return Res.NotFound("unit");
+
+            var unitsCount = _context.MUnit.Where(m => !m.IsDeleted).Count();
+
+            // display to the view model
+            var res = VMUnit.Dropdown.FromDb(units);
+
+            return ResTable.Success(res, unitsCount);
+        }
+
         // GET: api/Unit
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MUnit>>> GetMUnit()
         {
-          if (_context.MUnit == null)
-          {
-              return NotFound();
-          }
+            if (_context.MUnit == null)
+            {
+                return NotFound();
+            }
             return await _context.MUnit.ToListAsync();
         }
 
@@ -35,10 +64,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MUnit>> GetMUnit(int id)
         {
-          if (_context.MUnit == null)
-          {
-              return NotFound();
-          }
+            if (_context.MUnit == null)
+            {
+                return NotFound();
+            }
             var mUnit = await _context.MUnit.FindAsync(id);
 
             if (mUnit == null)
@@ -85,10 +114,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MUnit>> PostMUnit(MUnit mUnit)
         {
-          if (_context.MUnit == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MUnit'  is null.");
-          }
+            if (_context.MUnit == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MUnit'  is null.");
+            }
             _context.MUnit.Add(mUnit);
             await _context.SaveChangesAsync();
 

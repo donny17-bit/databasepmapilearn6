@@ -24,10 +24,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TrxFuf>>> GetTrxFuf()
         {
-          if (_context.TrxFuf == null)
-          {
-              return NotFound();
-          }
+            if (_context.TrxFuf == null)
+            {
+                return NotFound();
+            }
             return await _context.TrxFuf.ToListAsync();
         }
 
@@ -35,10 +35,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TrxFuf>> GetTrxFuf(int id)
         {
-          if (_context.TrxFuf == null)
-          {
-              return NotFound();
-          }
+            if (_context.TrxFuf == null)
+            {
+                return NotFound();
+            }
             var trxFuf = await _context.TrxFuf.FindAsync(id);
 
             if (trxFuf == null)
@@ -85,10 +85,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<TrxFuf>> PostTrxFuf(TrxFuf trxFuf)
         {
-          if (_context.TrxFuf == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.TrxFuf'  is null.");
-          }
+            if (_context.TrxFuf == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.TrxFuf'  is null.");
+            }
             _context.TrxFuf.Add(trxFuf);
             await _context.SaveChangesAsync();
 
