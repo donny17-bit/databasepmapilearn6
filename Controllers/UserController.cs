@@ -45,7 +45,53 @@ namespace databasepmapilearn6.Controllers
             _utlEmail = utlEmail;
         }
 
+        // GET: api/User/dropdown
+        [HttpGet("[action]")]
+        public async Task<ActionResult> Dropdown([FromQuery] IMUser.Dropdown input)
+        {
+            if (_context.MUser == null)
+            {
+                return Res.Failed("_context MUser is null in dropdown UserController");
+            }
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
 
+            // log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(UserController)}/{nameof(Dropdown)}", UtlConverter.ObjectToJson(input));
+
+            // query
+            var query = _context.MUser
+                .Where(m => (!m.IsDeleted)
+                    && (input.position_ids.Contains(m.PositionId)));
+
+            // search 
+            if (!string.IsNullOrEmpty(input.Search))
+            {
+                query = query.Where(m => m.Name.ToLower().Contains(input.Search));
+            }
+
+            try
+            {
+                // get data from database
+                var users = await query.Take(input.Show)
+                    .Union(query.Where(m => input.already_ids.Contains(m.Id))) // ga tau buat apa
+                    .OrderByDescending(m => m.Id)
+                    .ToArrayAsync();
+
+                // convert to dropdown
+                var res = VMUser.Dropdown.FromDb(users);
+
+                logger.Success();
+
+                return ResDropdown.Success(res);
+            }
+            catch (System.Exception e)
+            {
+                return Res.Failed(logger, e);
+            }
+        }
+
+        // GET: api/User/table
         [HttpGet("[action]")]
         public async Task<ActionResult<MUser>> Table([FromQuery] IMUser.Table input)
         {

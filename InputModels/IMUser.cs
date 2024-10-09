@@ -45,4 +45,9 @@ public class IMUser
     public class Table : IMTable
     {
     }
+
+    public class Dropdown : IMDropdown
+    {
+        public int[] position_ids { get; set; }
+    }
 }
