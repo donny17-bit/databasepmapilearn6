@@ -38,13 +38,16 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("[action]/{id}")]
         public async Task<ActionResult<MApproval>> GetApprovalId(int id)
         {
-            if (_context.MApprovals == null)
+            if (_context.MApprovalDetails == null)
             {
-                return Problem("Entity set 'DatabasePmContext.MApprovals' is null in GetApprovalId ApprovalController.");
+                return Problem("Entity set 'DatabasePmContext.MApprovalDetails' is null in GetApprovalId ApprovalController.");
             }
 
             // get from database
-            var approvals = await _context.MApprovals.Where(m => (m.Id == id) && (!m.IsDeleted)).ToArrayAsync();
+            var approvals = await _context.MApprovalDetails
+                .Where(m => (m.ApprovalId == id) && (!m.IsDeleted))
+                .Select(m => new MApprovalDetail { })
+                .ToArrayAsync();
 
             if (approvals == null)
             {
