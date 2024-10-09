@@ -52,7 +52,7 @@ namespace databasepmapilearn6.Controllers
             // get data menu
             // cari tau cara bacanya
             var menu = await query.Take(input.Show)
-                .Union(query.Where(m => input.AlreadyIds.Contains(m.ID)))
+                .Union(query.Where(m => input.already_ids.Contains(m.ID)))
                 .OrderByDescending(m => m.ID)
                 .ToArrayAsync();
 

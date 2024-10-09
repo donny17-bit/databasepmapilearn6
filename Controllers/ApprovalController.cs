@@ -43,8 +43,6 @@ namespace databasepmapilearn6.Controllers
                 return Res.NotFound("approval");
             }
 
-            Console.WriteLine(approvals);
-
             return Res.Success(approvals);
         }
 
@@ -53,30 +51,26 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("[action]/{id}")]
         public async Task<ActionResult<MApproval>> Detail(int id)
         {
-            if (_context.MApprovalDetails == null)
+            if (_context.MApprovals == null)
             {
-                return Problem("Entity set 'DatabasePmContext.MApprovalDetails' is null in GetApprovalId ApprovalController.");
+                return Problem("Entity set 'DatabasePmContext.MApprovals' is null in detail ApprovalController.");
             }
 
             // get from database
-            var approvals = await _context.MApprovalDetails
-                .Where(m => (m.ApprovalId == id) && (!m.IsDeleted))
-                .Select(m => new VMApprovalDetail
-                {
-                    level = m.Level,
-                    posisi = m.mPosition.Name,
-                    user = m.mPosition.mUser
-                })
-                .ToArrayAsync();
+            var approvals = await _context.MApprovals
+                .Include(m => m.MApprovalDetails).ThenInclude(m => m.Position)
+                .Include(m => m.TrxType)
+                .Where(m => (m.Id == id) && (!m.IsDeleted))
+                .SingleOrDefaultAsync();
 
             if (approvals == null)
             {
-                return Res.NotFound("approval");
+                return Res.NotFound("approval detail");
             }
 
-            // var res = VMApprovalDetail.
+            var res = VMApproval.Detail.FromDb(approvals);
 
-            return Res.Success();
+            return Res.Success(res);
         }
 
         // PUT: api/Approval/5

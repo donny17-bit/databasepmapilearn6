@@ -6,11 +6,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using databasepmapilearn6.Responses;
+using databasepmapilearn6.InputModels;
+using databasepmapilearn6.ViewModels;
+using databasepmapilearn6.Utilities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -18,6 +24,46 @@ namespace databasepmapilearn6.Controllers
         public ProjectController(DatabasePmContext context)
         {
             _context = context;
+        }
+
+        // GET: api/project/dropdown
+        [HttpGet("[action]")]
+        public async Task<ActionResult<MProject>> Dropdown([FromQuery] IMProject.Dropdown input)
+        {
+            // initialize logger
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(ProjectController)}/{nameof(Dropdown)}", UtlConverter.ObjectToJson(input));
+
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            try
+            {
+                // get from database
+                var query = _context.MProjects.Where(m =>
+                    (input.unit_ids.Contains(m.UnitId))
+                    && (!m.IsDeleted));
+
+                // search
+                if (!string.IsNullOrEmpty(input.Search))
+                {
+                    query = query.Where(m => m.Name.ToLower().Contains(input.Search));
+                }
+
+                // query final
+                var project = await query.Take(input.Show)
+                    .Union(query.Where(m => input.already_ids.Contains(m.Id))) // ga tau ini buat apa 
+                    .OrderByDescending(m => m.Id)
+                    .ToArrayAsync();
+
+                // ubah ke bentuk dropdown
+                var res = VMProject.Dropdown.FromDb(project);
+
+                return ResDropdown.Success(res);
+            }
+            catch (System.Exception e)
+            {
+                return Res.Failed(logger, e);
+            }
         }
 
         // GET: api/Project

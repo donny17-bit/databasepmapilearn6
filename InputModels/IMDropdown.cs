@@ -13,7 +13,7 @@ public abstract class IMDropdown
 
     /// List of ids that has been passed to the client before.
     /// Useful for editing data.
-    public int[] AlreadyIds { get; set; } = { };
+    public int[] already_ids { get; set; } = { };
 
-    public string[] AlreadyCodes { get; set; } = { };
+    public string[] already_codes { get; set; } = { };
 }

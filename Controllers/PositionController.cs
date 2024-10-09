@@ -47,7 +47,7 @@ namespace databasepmapilearn6.Controllers
             // get data from database
             var position = await query
                 .Take(input.Show)
-                .Union(query.Where(m => input.AlreadyIds.Contains(m.Id)))
+                .Union(query.Where(m => input.already_ids.Contains(m.Id)))
                 .OrderByDescending(m => m.Id)
                 .ToArrayAsync();
 

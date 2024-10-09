@@ -19,7 +19,7 @@ public class MApprovalDetail
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
 
-    public virtual MApproval mApproval { get; set; }
+    public virtual MApproval Approval { get; set; } = null!;
 
-    public virtual MPosition mPosition { get; set; }
+    public virtual MPosition Position { get; set; } = null!;
 }

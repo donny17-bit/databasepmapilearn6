@@ -5,6 +5,11 @@ namespace databasepmapilearn6.models;
 [Table("m_approval")]
 public class MApproval
 {
+    public MApproval()
+    {
+        MApprovalDetails = new HashSet<MApprovalDetail>();
+    }
+
     public int Id { get; set; }
 
     [Column("trx_type_id")]
@@ -24,7 +29,7 @@ public class MApproval
 
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
-
-    // public virtual MTrxType mTrxType { get; set; }
+    public virtual ICollection<MApprovalDetail> MApprovalDetails { get; set; }
+    public virtual MTrxType TrxType { get; set; } = null!;
 
 }
