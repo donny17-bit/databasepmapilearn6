@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
 using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.Responses;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -23,20 +24,32 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
-        // GET: api/Approval
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MApproval>>> GetMApprovals()
+        // GET: api/Approval/getapprovalid/100
+        [HttpGet("[action]/{id}")]
+        public async Task<ActionResult<MApproval>> GetApprovalId(int id)
         {
             if (_context.MApprovals == null)
             {
-                return NotFound();
+                return Problem("Entity set 'DatabasePmContext.MApprovals' is null in GetApprovalId ApprovalController.");
             }
-            return await _context.MApprovals.ToListAsync();
+
+            // get from database
+            var approvals = await _context.MApprovals
+                .Where(m => (m.Id == id) && (!m.IsDeleted))
+                .SingleOrDefaultAsync();
+
+            if (approvals == null)
+            {
+                return Res.NotFound("approval");
+            }
+
+            return Res.Success(approvals);
         }
 
-        // GET: api/Approval/5
+        
+        // GET: api/Approval/detail/5
         [HttpGet("[action]/{id}")]
-        public async Task<ActionResult<MApproval>> GetApprovalId(int id)
+        public async Task<ActionResult<MApproval>> Detail(int id)
         {
             if (_context.MApprovalDetails == null)
             {
@@ -46,13 +59,19 @@ namespace databasepmapilearn6.Controllers
             // get from database
             var approvals = await _context.MApprovalDetails
                 .Where(m => (m.ApprovalId == id) && (!m.IsDeleted))
-                .Select(m => new MApprovalDetail { })
+                .Select(m => new VMApprovalDetail{
+                    level = m.Level,
+                    posisi = m.mPosition.Name,
+                    user = m.mPosition.mUser
+                })
                 .ToArrayAsync();
 
             if (approvals == null)
             {
                 return Res.NotFound("approval");
             }
+
+            // var res = VMApprovalDetail.
 
             return Res.Success();
         }
