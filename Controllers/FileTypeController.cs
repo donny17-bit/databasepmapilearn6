@@ -6,11 +6,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.InputModels;
+using databasepmapilearn6.Responses;
+using databasepmapilearn6.Utilities;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FileTypeController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -20,14 +26,57 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
+        // GET: api/FileType/action
+        [HttpGet("[action]")]
+        public async Task<ActionResult> Dropdown([FromQuery] IMFileType.Dropdown input)
+        {
+            if (_context.MFileType == null) return Res.Failed("_context MFileType is null in dropdown FileTypeController");
+
+            // inisialisasi log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(FileTypeController)}/{nameof(Dropdown)}", UtlConverter.ObjectToJson(input));
+
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get the data from database
+            var query = _context.MFileType
+                .Where(m => !m.IsDeleted);
+
+            // search
+            if (!string.IsNullOrEmpty(input.Search))
+            {
+                query = query.Where(m => m.name.ToLower().Contains(input.Search));
+            }
+
+            try
+            {
+                // final query
+                var FileTypes = await query
+                    .Take(input.Show)
+                    .Union(query.Where(m => input.already_ids.Contains(m.Id))) // ga tau buat apa
+                    .OrderByDescending(m => m.Id)
+                    .ToArrayAsync();
+
+                // convert to dropdown
+                var res = VMFileType.Dropdown.FromDb(FileTypes);
+
+                logger.Success();
+                return ResDropdown.Success(res);
+            }
+            catch (System.Exception e)
+            {
+                return Res.Failed(logger, e);
+            }
+        }
+
         // GET: api/FileType
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MFileType>>> GetMFileType()
         {
-          if (_context.MFileType == null)
-          {
-              return NotFound();
-          }
+            if (_context.MFileType == null)
+            {
+                return NotFound();
+            }
             return await _context.MFileType.ToListAsync();
         }
 
@@ -35,10 +84,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MFileType>> GetMFileType(int id)
         {
-          if (_context.MFileType == null)
-          {
-              return NotFound();
-          }
+            if (_context.MFileType == null)
+            {
+                return NotFound();
+            }
             var mFileType = await _context.MFileType.FindAsync(id);
 
             if (mFileType == null)
@@ -85,10 +134,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MFileType>> PostMFileType(MFileType mFileType)
         {
-          if (_context.MFileType == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MFileType'  is null.");
-          }
+            if (_context.MFileType == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MFileType'  is null.");
+            }
             _context.MFileType.Add(mFileType);
             await _context.SaveChangesAsync();
 
