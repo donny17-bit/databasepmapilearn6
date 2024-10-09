@@ -6,11 +6,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
+using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.InputModels;
+using databasepmapilearn6.Responses;
+using databasepmapilearn6.Utilities;
+using databasepmapilearn6.ViewModels;
 
 namespace databasepmapilearn6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class JobTypeController : ControllerBase
     {
         private readonly DatabasePmContext _context;
@@ -20,14 +26,58 @@ namespace databasepmapilearn6.Controllers
             _context = context;
         }
 
+        // GET: api/jobtype/dropdown
+        [HttpGet("[action]")]
+        public async Task<ActionResult> Dropdown([FromQuery] IMJobType.Dropdown input)
+        {
+            if (_context.MJobType == null) return Res.Failed("_context MJobType is null in dropdown JobTypeController");
+
+            // initialize log
+            var logger = UtlLogger.Create(User.Identity.Name, $"{nameof(JobTypeController)}/{nameof(Dropdown)}", UtlConverter.ObjectToJson(input));
+
+            // validasi input
+            if (!ModelState.IsValid) return Res.Failed(ModelState);
+
+            // get data from database 
+            var query = _context.MJobType
+                .Where(m => !m.IsDeleted);
+
+            // search
+            if (!string.IsNullOrEmpty(input.Search))
+            {
+                query = query.Where(m => m.Name.ToLower().Contains(input.Search));
+            }
+
+            try
+            {
+                var jobTypes = await _context.MJobType
+                    .Take(input.Show)
+                    .Union(query.Where(m => input.already_ids.Contains(m.Id))) // ga tau buat apa
+                    .OrderByDescending(m => m.Id)
+                    .ToArrayAsync();
+
+                // convert to dropdown
+                var res = VMJobType.Dropdown.FromDb(jobTypes);
+
+                logger.Success();
+
+                return ResDropdown.Success(res);
+            }
+            catch (System.Exception e)
+            {
+
+                return Res.Failed(logger, e);
+            }
+        }
+
         // GET: api/JobType
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MJobType>>> GetMJobType()
         {
-          if (_context.MJobType == null)
-          {
-              return NotFound();
-          }
+            if (_context.MJobType == null)
+            {
+                return NotFound();
+            }
             return await _context.MJobType.ToListAsync();
         }
 
@@ -35,10 +85,10 @@ namespace databasepmapilearn6.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MJobType>> GetMJobType(int id)
         {
-          if (_context.MJobType == null)
-          {
-              return NotFound();
-          }
+            if (_context.MJobType == null)
+            {
+                return NotFound();
+            }
             var mJobType = await _context.MJobType.FindAsync(id);
 
             if (mJobType == null)
@@ -85,10 +135,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MJobType>> PostMJobType(MJobType mJobType)
         {
-          if (_context.MJobType == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MJobType'  is null.");
-          }
+            if (_context.MJobType == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MJobType'  is null.");
+            }
             _context.MJobType.Add(mJobType);
             await _context.SaveChangesAsync();
 
