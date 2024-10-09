@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using databasepmapilearn6.models;
 using Microsoft.AspNetCore.Authorization;
+using databasepmapilearn6.Responses;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -26,29 +27,31 @@ namespace databasepmapilearn6.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MApproval>>> GetMApprovals()
         {
-          if (_context.MApprovals == null)
-          {
-              return NotFound();
-          }
+            if (_context.MApprovals == null)
+            {
+                return NotFound();
+            }
             return await _context.MApprovals.ToListAsync();
         }
 
         // GET: api/Approval/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MApproval>> GetMApproval(int id)
+        [HttpGet("[action]/{id}")]
+        public async Task<ActionResult<MApproval>> GetApprovalId(int id)
         {
-          if (_context.MApprovals == null)
-          {
-              return NotFound();
-          }
-            var mApproval = await _context.MApprovals.FindAsync(id);
-
-            if (mApproval == null)
+            if (_context.MApprovals == null)
             {
-                return NotFound();
+                return Problem("Entity set 'DatabasePmContext.MApprovals' is null in GetApprovalId ApprovalController.");
             }
 
-            return mApproval;
+            // get from database
+            var approvals = await _context.MApprovals.Where(m => (m.Id == id) && (!m.IsDeleted)).ToArrayAsync();
+
+            if (approvals == null)
+            {
+                return Res.NotFound("approval");
+            }
+
+            return Res.Success();
         }
 
         // PUT: api/Approval/5
@@ -87,10 +90,10 @@ namespace databasepmapilearn6.Controllers
         [HttpPost]
         public async Task<ActionResult<MApproval>> PostMApproval(MApproval mApproval)
         {
-          if (_context.MApprovals == null)
-          {
-              return Problem("Entity set 'DatabasePmContext.MApprovals'  is null.");
-          }
+            if (_context.MApprovals == null)
+            {
+                return Problem("Entity set 'DatabasePmContext.MApprovals'  is null.");
+            }
             _context.MApprovals.Add(mApproval);
             await _context.SaveChangesAsync();
 
