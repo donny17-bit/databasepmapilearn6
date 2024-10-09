@@ -25,6 +25,6 @@ public class MApproval
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
 
-    public virtual MTrxType mTrxType { get; set; }
+    // public virtual MTrxType mTrxType { get; set; }
 
 }

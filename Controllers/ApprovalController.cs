@@ -35,7 +35,7 @@ namespace databasepmapilearn6.Controllers
 
             // get from database
             var approvals = await _context.MApprovals
-                .Where(m => (m.Id == id) && (!m.IsDeleted))
+                .Where(m => (m.TrxTypeId == id) && (!m.IsDeleted))
                 .SingleOrDefaultAsync();
 
             if (approvals == null)
@@ -43,10 +43,12 @@ namespace databasepmapilearn6.Controllers
                 return Res.NotFound("approval");
             }
 
+            Console.WriteLine(approvals);
+
             return Res.Success(approvals);
         }
 
-        
+
         // GET: api/Approval/detail/5
         [HttpGet("[action]/{id}")]
         public async Task<ActionResult<MApproval>> Detail(int id)
@@ -59,7 +61,8 @@ namespace databasepmapilearn6.Controllers
             // get from database
             var approvals = await _context.MApprovalDetails
                 .Where(m => (m.ApprovalId == id) && (!m.IsDeleted))
-                .Select(m => new VMApprovalDetail{
+                .Select(m => new VMApprovalDetail
+                {
                     level = m.Level,
                     posisi = m.mPosition.Name,
                     user = m.mPosition.mUser
