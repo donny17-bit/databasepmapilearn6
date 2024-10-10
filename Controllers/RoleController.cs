@@ -25,7 +25,7 @@ namespace databasepmapilearn6.Controllers
 
         // column mapping
         private readonly List<ColumnMapping> ColumnMappings = new List<ColumnMapping>{
-            // nama variable harus sama dengan view model (case sensitif)
+            // nama variable harus sama antara view model dengan model asli (VMRole dengan MRole) (case sensitif)
             ColumnMapping.Create(nameof(VMRole.Table.name), "name", Enumerations.EnumDbdt.STRING),
         };
 

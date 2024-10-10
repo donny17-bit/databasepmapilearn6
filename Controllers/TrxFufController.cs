@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using databasepmapilearn6.Utilities;
 using databasepmapilearn6.ExtensionMethods;
 using databasepmapilearn6.ViewModels;
+using static databasepmapilearn6.ExtensionMethods.ExtIQueryable;
 
 namespace databasepmapilearn6.Controllers
 {
@@ -21,6 +22,17 @@ namespace databasepmapilearn6.Controllers
     public class TrxFufController : ControllerBase
     {
         private readonly DatabasePmContext _context;
+
+        private readonly List<ColumnMapping> columMappings = new List<ColumnMapping> {
+            // nama variable harus sama antara view model dengan model asli (VMTrxFuf dengan TrxFuf) (case sensitif)
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.id), "id", Enumerations.EnumDbdt.INT),
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.fuf_number), "FufNumber", Enumerations.EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.status_name), "TrxStatus.Name", Enumerations.EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.unit_name), "Unit.Name", Enumerations.EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.year), "year", Enumerations.EnumDbdt.INT),
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.project_name), "Project.Name", Enumerations.EnumDbdt.STRING),
+            ColumnMapping.Create(nameof(VMTrxFuf.Table.job_type_name), "JobType.Name", Enumerations.EnumDbdt.STRING),
+        };
 
         public TrxFufController(DatabasePmContext context)
         {
@@ -51,11 +63,16 @@ namespace databasepmapilearn6.Controllers
                 .Where(m => (m.CreatedBy == iClaim.Id) && (!m.IsDeleted));
 
             // search
+            if (input.Search.Count > 0)
+            {
+                query = query.DynamicSearch(input.Search, columMappings);
+            }
 
             // sort
             if (input.Sort.Count > 0)
             {
                 // do sorting
+                query = query.DynamicSort(input.Sort, columMappings);
             }
             else
             {
@@ -71,8 +88,6 @@ namespace databasepmapilearn6.Controllers
 
                 // total data
                 var trxFufsCount = await query.CountAsync();
-
-                // if (trxFufsCount <= 0) return Res.Success();
 
                 // convert to table 
                 var res = VMTrxFuf.Table.FromDb(trxFufs);
